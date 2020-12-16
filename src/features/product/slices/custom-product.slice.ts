@@ -1,5 +1,5 @@
-import { AnyAction, createAction } from "@reduxjs/toolkit";
-import { AbstractProductState, productSlice, ProductSliceName, ProductState } from "./product.slice";
+import { createAction } from "@reduxjs/toolkit";
+import { AbstractProductState, ProductReducer, productSlice, ProductSliceName } from "./product.slice";
 import { produce } from "immer";
 import { RootState } from "../../../app/store";
 
@@ -11,7 +11,7 @@ export interface CustomProductState extends AbstractProductState {
 export const createCustomProductSlice = (prefix: string) => {
     const setChar = createAction<{ name: string, value: string }>(prefix + "setChar");
 
-    const reducer = (state: CustomProductState, action: AnyAction): ProductState => {
+    const reducer: ProductReducer<CustomProductState> = (state, action) => {
         if (setChar.match(action)) {
             return produce(state, draft => {
                 const { name, value } = action.payload;

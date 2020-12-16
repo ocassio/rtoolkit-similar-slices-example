@@ -8,7 +8,8 @@ export interface AbstractProductState {
     name: string;
 }
 
-export type ProductState = GenericProductState | CustomProductState | null;
+export type ProductState = GenericProductState | CustomProductState | null | undefined;
+export type ProductReducer<T = ProductState> = (state: T, action: AnyAction) => ProductState;
 
 const createProductSlice = (name: string, initialState: ProductState = null) => {
 
@@ -19,7 +20,7 @@ const createProductSlice = (name: string, initialState: ProductState = null) => 
 
     const setProduct = createAction<ProductState>(prefix + "set");
 
-    const reducer = (state: ProductState = initialState, action: AnyAction): ProductState => {
+    const reducer: ProductReducer = (state = initialState, action) => {
         if (setProduct.match(action)) {
             return action.payload;
         }
@@ -81,7 +82,6 @@ export const productSlice = (name: ProductSliceName) => {
 
     return slices[name];
 };
-
 
 export const productReducer = (name: ProductSliceName) => productSlice(name).reducer;
 

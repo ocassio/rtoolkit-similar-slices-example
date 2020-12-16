@@ -1,10 +1,11 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import { productReducer } from '../features/product/product.slice';
+import { productReducer } from '../features/product/slices/product.slice';
 
 export const store = configureStore({
   reducer: {
     product: productReducer("product"),
-    popupProduct: productReducer("popupProduct")
+    popupProduct: productReducer("popupProduct"),
+    oneMoreProduct: productReducer("oneMoreProduct")
   },
 });
 

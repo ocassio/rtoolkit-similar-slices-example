@@ -2,9 +2,10 @@ import React, { useContext } from "react";
 import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ProductContext } from "./product.context";
-import { increase, selectCount, selectName } from "./product.slice";
+import { increase, selectCount } from "./slices/generic-product.slice";
+import { selectName } from "./slices/product.slice";
 
-const Product: FC = () => {
+const GenericProduct: FC = () => {
     const sliceName = useContext(ProductContext);
 
     const name = useSelector(selectName(sliceName));
@@ -26,4 +27,4 @@ const Product: FC = () => {
     );
 }
 
-export default React.memo(Product);
+export default React.memo(GenericProduct);

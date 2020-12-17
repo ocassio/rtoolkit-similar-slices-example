@@ -2,6 +2,7 @@ import { AnyAction, createAction } from "@reduxjs/toolkit";
 import { RootState } from "../../../app/store";
 import { createCustomProductSlice, CustomProductState } from "./custom-product.slice";
 import { createGenericProductSlice, GenericProductState } from "./generic-product.slice";
+import { produce } from "immer";
 
 export interface AbstractProductState {
     id: string;
@@ -9,7 +10,7 @@ export interface AbstractProductState {
 }
 
 export type ProductState = GenericProductState | CustomProductState | null | undefined;
-export type ProductReducer<T = ProductState> = (state: T, action: AnyAction) => ProductState;
+export type ProductReducer<T = ProductState> = (state: T, action: AnyAction) => ProductState | void;
 
 const createProductSlice = (name: string, initialState: ProductState = null) => {
 
@@ -20,19 +21,19 @@ const createProductSlice = (name: string, initialState: ProductState = null) => 
 
     const setProduct = createAction<ProductState>(prefix + "set");
 
-    const reducer: ProductReducer = (state = initialState, action) => {
-        if (setProduct.match(action)) {
-            return action.payload;
-        }
-
-        switch (state?.type) {
-            case "generic":
-                return genericProductSlice.reducer(state, action);
-            case "custom":
-                return customProductSlice.reducer(state, action);
-        }
-
-        return state;
+    const reducer = (state: ProductState = initialState, action: AnyAction): ProductState => {
+        return produce(state, draft => {
+            if (setProduct.match(action)) {
+                return action.payload;
+            }
+    
+            switch (draft?.type) {
+                case "generic":
+                    return genericProductSlice.reducer(draft, action);
+                case "custom":
+                    return customProductSlice.reducer(draft, action);
+            }
+        });
     }
 
     return {

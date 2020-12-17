@@ -1,6 +1,5 @@
 import { createAction } from "@reduxjs/toolkit";
 import { AbstractProductState, ProductReducer, productSlice, ProductSliceName } from "./product.slice";
-import { produce } from "immer";
 import { RootState } from "../../../app/store";
 
 export interface CustomProductState extends AbstractProductState {
@@ -13,13 +12,10 @@ export const createCustomProductSlice = (prefix: string) => {
 
     const reducer: ProductReducer<CustomProductState> = (state, action) => {
         if (setChar.match(action)) {
-            return produce(state, draft => {
-                const { name, value } = action.payload;
-                draft.chars[name] = value;
-            });
+            const { name, value } = action.payload;
+            state.chars[name] = value;
+            return;
         }
-        
-        return state;
     }
 
     return {

@@ -2,8 +2,8 @@ import React, { useContext } from "react";
 import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ProductContext } from "./product.context";
+import { selectName } from "./slices/abstract-product.slice";
 import { increase, selectCount } from "./slices/generic-product.slice";
-import { selectName } from "./slices/product.slice";
 
 const GenericProduct: FC = () => {
     const sliceName = useContext(ProductContext);

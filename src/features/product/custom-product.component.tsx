@@ -2,8 +2,8 @@ import React, { ChangeEventHandler, useContext, useState } from "react";
 import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ProductContext } from "./product.context";
+import { selectName } from "./slices/abstract-product.slice";
 import { selectChars, setChar } from "./slices/custom-product.slice";
-import { selectName } from "./slices/product.slice";
 
 const CustomProduct: FC = () => {
     const sliceName = useContext(ProductContext);

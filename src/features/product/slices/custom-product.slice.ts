@@ -1,6 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
-import { AbstractProductState, ProductReducer, productSlice, ProductSliceName } from "./product.slice";
+import { productSlice, ProductSliceName } from "./product.slices";
 import { RootState } from "../../../app/store";
+import { AbstractProductState, ProductReducer } from "./abstract-product.slice";
 
 export interface CustomProductState extends AbstractProductState {
     type: "custom";

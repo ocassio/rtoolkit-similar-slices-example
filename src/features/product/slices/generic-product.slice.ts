@@ -1,6 +1,7 @@
 import { createAction } from "@reduxjs/toolkit";
-import { AbstractProductState, ProductReducer, productSlice, ProductSliceName } from "./product.slice";
+import { productSlice, ProductSliceName } from "./product.slices";
 import { RootState } from "../../../app/store";
+import { AbstractProductState, ProductReducer } from "./abstract-product.slice";
 
 export interface GenericProductState extends AbstractProductState {
     type: "generic";
@@ -9,9 +10,10 @@ export interface GenericProductState extends AbstractProductState {
 
 export const createGenericProductSlice = (prefix: string) => {
     const increase = createAction<number>(prefix + "increase");
+
     const reducer: ProductReducer<GenericProductState> = (state, action) => {
         if (increase.match(action)) {
-            state.count++;
+            state.count += action.payload;
             return;
         }
     }

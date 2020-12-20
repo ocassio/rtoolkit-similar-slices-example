@@ -2,14 +2,14 @@ import React, { ChangeEventHandler, useContext, useState } from "react";
 import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ProductContext } from "./product.context";
-import { selectName } from "./slices/abstract-product.slice";
-import { selectChars, setChar } from "./slices/custom-product.slice";
+import { useProductActions, useProductSelectors } from "./slices/product.slices";
 
 const CustomProduct: FC = () => {
     const sliceName = useContext(ProductContext);
 
-    const name = useSelector(selectName(sliceName));
-    const chars = useSelector(selectChars(sliceName));
+    const { selectName, selectChars } = useProductSelectors(sliceName);
+    const name = useSelector(selectName);
+    const chars = useSelector(selectChars);
 
     const [newCharName, setNewCharName] = useState("");
     const handleNewCharNameChange: ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -22,8 +22,10 @@ const CustomProduct: FC = () => {
     }
 
     const dispatch = useDispatch();
+    const { setChar } = useProductActions(sliceName);
+
     const handleSet = () => {
-        dispatch(setChar(sliceName)({
+        dispatch(setChar({
             name: newCharName,
             value: newCharValue
         }));

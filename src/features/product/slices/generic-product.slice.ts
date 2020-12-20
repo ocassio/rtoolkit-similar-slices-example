@@ -1,5 +1,5 @@
-import { createAction } from "@reduxjs/toolkit";
-import { productActions, ProductSliceName } from "./product.slices";
+import { createAction, createSelector } from "@reduxjs/toolkit";
+import { ProductSliceName } from "./product.slices";
 import { RootState } from "../../../app/store";
 import { AbstractProductState, ProductReducer } from "./abstract-product.slice";
 
@@ -10,8 +10,19 @@ export interface GenericProductState extends AbstractProductState {
     count: number;
 }
 
-export const createGenericProductSlice = (prefix: string) => {
-    const increase = createAction<number>(prefix + "increase");
+export const createGenericProductSlice = (sliceName: ProductSliceName) => {
+    
+    const increase = createAction<number>(sliceName + "/increase");
+
+    const selectCount = (state: RootState) => {
+        const s = state[sliceName];
+        return s?.type === GENERIC_PRODUCT_TYPE ? s.count : 0;
+    }
+
+    const selectCountX2 = createSelector(
+        selectCount,
+        count => count * 2
+    );
 
     const reducer: ProductReducer<GenericProductState> = (state, action) => {
         if (increase.match(action)) {
@@ -24,13 +35,10 @@ export const createGenericProductSlice = (prefix: string) => {
         reducer,
         actions: {
             increase
+        },
+        selectors: {
+            selectCount,
+            selectCountX2
         }
     };
-}
-
-export const increase = (name: ProductSliceName) => productActions(name).increase;
-
-export const selectCount = (name: ProductSliceName) => (state: RootState) => {
-    const s = state[name];
-    return s?.type === GENERIC_PRODUCT_TYPE ? s.count : 0;
 }

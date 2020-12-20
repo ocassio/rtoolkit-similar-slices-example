@@ -1,4 +1,4 @@
-import { createProductSlice } from "./abstract-product.slice";
+import { createProductSlice, VanillaProductReducer } from "./abstract-product.slice";
 import { CUSTOM_PRODUCT_TYPE } from "./custom-product.slice";
 import { GENERIC_PRODUCT_TYPE } from "./generic-product.slice";
 
@@ -33,7 +33,7 @@ const createSlices = (): ProductSlices => ({
     })
 });
 
-export const productSlice = (name: ProductSliceName) => {
+export const productSlice = (name: ProductSliceName): ProductSlice => {
     if (!slices) {
         slices = createSlices();
     }
@@ -41,5 +41,7 @@ export const productSlice = (name: ProductSliceName) => {
     return slices[name];
 };
 
-export const productReducer = (name: ProductSliceName) => productSlice(name).reducer;
-export const productActions = (name: ProductSliceName) => productSlice(name).actions;
+export const productReducer = (name: ProductSliceName): VanillaProductReducer => productSlice(name).reducer;
+
+export const useProductActions = (name: ProductSliceName) => productSlice(name).actions;
+export const useProductSelectors = (name: ProductSliceName) => productSlice(name).selectors;

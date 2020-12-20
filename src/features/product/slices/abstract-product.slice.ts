@@ -3,7 +3,7 @@ import { createGenericProductSlice, GenericProductState, GENERIC_PRODUCT_TYPE } 
 import { produce } from "immer";
 import { AnyAction, createAction } from "@reduxjs/toolkit";
 import { RootState } from "../../../app/store";
-import { ProductSliceName, productActions } from "./product.slices";
+import { ProductSliceName } from "./product.slices";
 
 export interface AbstractProductState {
     id: string;
@@ -11,18 +11,21 @@ export interface AbstractProductState {
 }
 
 export type ProductState = GenericProductState | CustomProductState | null | undefined;
+
+export type VanillaProductReducer<T = ProductState> = (state: T, action: AnyAction) => ProductState;
 export type ProductReducer<T = ProductState> = (state: T, action: AnyAction) => ProductState | void;
 
-export const createProductSlice = (name: string, initialState: ProductState = null) => {
+export const createProductSlice = (sliceName: ProductSliceName, initialState: ProductState = null) => {
 
-    const prefix = name + "/";
+    const genericProductSlice = createGenericProductSlice(sliceName);
+    const customProductSlice = createCustomProductSlice(sliceName);
 
-    const genericProductSlice = createGenericProductSlice(prefix);
-    const customProductSlice = createCustomProductSlice(prefix);
+    const setProduct = createAction<ProductState>(sliceName + "/set");
 
-    const setProduct = createAction<ProductState>(prefix + "set");
+    const selectProduct = (state: RootState) => state[sliceName];
+    const selectName = (state: RootState) => state[sliceName]?.name;
 
-    const reducer = (state: ProductState = initialState, action: AnyAction): ProductState => {
+    const reducer: VanillaProductReducer = (state = initialState, action) => {
         return produce(state, draft => {
             if (setProduct.match(action)) {
                 return action.payload;
@@ -43,12 +46,12 @@ export const createProductSlice = (name: string, initialState: ProductState = nu
             ...genericProductSlice.actions,
             ...customProductSlice.actions,
             setProduct
+        },
+        selectors: {
+            ...genericProductSlice.selectors,
+            ...customProductSlice.selectors,
+            selectProduct,
+            selectName
         }
     };
 };
-
-export const setProduct = (name: ProductSliceName) => productActions(name).setProduct;
-
-export const selectProduct = (name: ProductSliceName) => (state: RootState) => state[name];
-
-export const selectName = (name: ProductSliceName) => (state: RootState) => state[name]?.name;

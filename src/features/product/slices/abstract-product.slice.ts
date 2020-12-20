@@ -17,13 +17,21 @@ export type ProductReducer<T = ProductState> = (state: T, action: AnyAction) => 
 
 export const createProductSlice = (sliceName: ProductSliceName, initialState: ProductState = null) => {
 
+    // Children
+
     const genericProductSlice = createGenericProductSlice(sliceName);
     const customProductSlice = createCustomProductSlice(sliceName);
 
+    // Actions
+
     const setProduct = createAction<ProductState>(sliceName + "/set");
+
+    // Selectors
 
     const selectProduct = (state: RootState) => state[sliceName];
     const selectName = (state: RootState) => state[sliceName]?.name;
+
+    // Reducer
 
     const reducer: VanillaProductReducer = (state = initialState, action) => {
         return produce(state, draft => {

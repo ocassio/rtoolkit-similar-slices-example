@@ -12,7 +12,11 @@ export interface GenericProductState extends AbstractProductState {
 
 export const createGenericProductSlice = (sliceName: ProductSliceName) => {
     
+    // Actions
+
     const increase = createAction<number>(sliceName + "/increase");
+
+    // Selectors
 
     const selectCount = (state: RootState) => {
         const s = state[sliceName];
@@ -23,6 +27,8 @@ export const createGenericProductSlice = (sliceName: ProductSliceName) => {
         selectCount,
         count => count * 2
     );
+
+    // Reducers
 
     const reducer: ProductReducer<GenericProductState> = (state, action) => {
         if (increase.match(action)) {

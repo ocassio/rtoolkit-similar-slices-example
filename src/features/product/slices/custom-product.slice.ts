@@ -13,6 +13,8 @@ export interface CustomProductState extends AbstractProductState {
 
 export const createCustomProductSlice = (sliceName: ProductSliceName) => {
 
+    // Actions
+
     const setChar = createAction<{ name: string, value: string }>(sliceName + "/setChar");
 
     const loadChars = createAsyncThunk(
@@ -26,16 +28,21 @@ export const createCustomProductSlice = (sliceName: ProductSliceName) => {
                 1000
             )
         })
-    )
+    );
 
-    const selectChars = (state: RootState) => {
-        const s = state[sliceName];
-        return s?.type === CUSTOM_PRODUCT_TYPE ? s.chars : {};
+    // Selectors
+
+    const customProductSelector = <T> (selector: (state: CustomProductState) => T, fallbackValue: T): (state: RootState) => T => {
+        return (state: RootState) => {
+            const s = state[sliceName];
+            return s?.type === CUSTOM_PRODUCT_TYPE ? selector(s) : fallbackValue;
+        };
     }
-    const selectLoading = (state: RootState) => {
-        const s = state[sliceName];
-        return s?.type === CUSTOM_PRODUCT_TYPE ? s.loading : false;
-    }
+
+    const selectChars = customProductSelector(state => state.chars, {});
+    const selectLoading = customProductSelector(state => state.loading, false);
+
+    // Reducer
 
     const reducer: ProductReducer<CustomProductState> = (state, action) => {
         if (setChar.match(action)) {

@@ -29,7 +29,8 @@ const createSlices = (): ProductSlices => ({
         type: CUSTOM_PRODUCT_TYPE,
         id: "3",
         name: "Product 3",
-        chars: {}
+        chars: {},
+        loading: false
     })
 });
 

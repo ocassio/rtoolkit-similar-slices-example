@@ -1,10 +1,12 @@
 import { createAction } from "@reduxjs/toolkit";
-import { productSlice, ProductSliceName } from "./product.slices";
+import { productActions, productSlice, ProductSliceName } from "./product.slices";
 import { RootState } from "../../../app/store";
 import { AbstractProductState, ProductReducer } from "./abstract-product.slice";
 
+export const CUSTOM_PRODUCT_TYPE = "custom";
+
 export interface CustomProductState extends AbstractProductState {
-    type: "custom";
+    type: typeof CUSTOM_PRODUCT_TYPE;
     chars: Record<string, string>;
 }
 
@@ -27,9 +29,9 @@ export const createCustomProductSlice = (prefix: string) => {
     };
 } 
 
-export const setChar = (name: ProductSliceName) => productSlice(name).actions.setChar;
+export const setChar = (name: ProductSliceName) => productActions(name).setChar;
 
 export const selectChars = (name: ProductSliceName) => (state: RootState) => {
     const s = state[name];
-    return s?.type === "custom" ? s.chars : {};
+    return s?.type === CUSTOM_PRODUCT_TYPE ? s.chars : {};
 }

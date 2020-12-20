@@ -1,9 +1,9 @@
-import { createCustomProductSlice, CustomProductState } from "./custom-product.slice";
-import { createGenericProductSlice, GenericProductState } from "./generic-product.slice";
+import { createCustomProductSlice, CustomProductState, CUSTOM_PRODUCT_TYPE } from "./custom-product.slice";
+import { createGenericProductSlice, GenericProductState, GENERIC_PRODUCT_TYPE } from "./generic-product.slice";
 import { produce } from "immer";
 import { AnyAction, createAction } from "@reduxjs/toolkit";
 import { RootState } from "../../../app/store";
-import { ProductSliceName, productSlice } from "./product.slices";
+import { ProductSliceName, productActions } from "./product.slices";
 
 export interface AbstractProductState {
     id: string;
@@ -29,9 +29,9 @@ export const createProductSlice = (name: string, initialState: ProductState = nu
             }
     
             switch (draft?.type) {
-                case "generic":
+                case GENERIC_PRODUCT_TYPE:
                     return genericProductSlice.reducer(draft, action);
-                case "custom":
+                case CUSTOM_PRODUCT_TYPE:
                     return customProductSlice.reducer(draft, action);
             }
         });
@@ -47,6 +47,8 @@ export const createProductSlice = (name: string, initialState: ProductState = nu
     };
 };
 
-export const setProduct = (name: ProductSliceName) => productSlice(name).actions.setProduct;
+export const setProduct = (name: ProductSliceName) => productActions(name).setProduct;
+
+export const selectProduct = (name: ProductSliceName) => (state: RootState) => state[name];
 
 export const selectName = (name: ProductSliceName) => (state: RootState) => state[name]?.name;

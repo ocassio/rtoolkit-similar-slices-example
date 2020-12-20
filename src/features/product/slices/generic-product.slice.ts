@@ -1,10 +1,12 @@
 import { createAction } from "@reduxjs/toolkit";
-import { productSlice, ProductSliceName } from "./product.slices";
+import { productActions, ProductSliceName } from "./product.slices";
 import { RootState } from "../../../app/store";
 import { AbstractProductState, ProductReducer } from "./abstract-product.slice";
 
+export const GENERIC_PRODUCT_TYPE = "generic";
+
 export interface GenericProductState extends AbstractProductState {
-    type: "generic";
+    type: typeof GENERIC_PRODUCT_TYPE;
     count: number;
 }
 
@@ -26,9 +28,9 @@ export const createGenericProductSlice = (prefix: string) => {
     };
 }
 
-export const increase = (name: ProductSliceName) => productSlice(name).actions.increase;
+export const increase = (name: ProductSliceName) => productActions(name).increase;
 
 export const selectCount = (name: ProductSliceName) => (state: RootState) => {
     const s = state[name];
-    return s?.type === "generic" ? s.count : 0;
+    return s?.type === GENERIC_PRODUCT_TYPE ? s.count : 0;
 }

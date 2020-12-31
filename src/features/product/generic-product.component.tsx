@@ -13,9 +13,10 @@ const GenericProduct: FC = () => {
     const countX2 = useSelector(selectCountX2);
 
     const dispatch = useDispatch();
-    const { increase } = useProductActions(sliceName);
+    const { increase, loadProduct } = useProductActions(sliceName);
 
     const handleIncrease = () => dispatch(increase(2));
+    const handleLoad = () => dispatch(loadProduct());
 
     return (
         <div>
@@ -24,6 +25,7 @@ const GenericProduct: FC = () => {
             <div>Count x2: {countX2}</div>
             <div>
                 <button type="button" onClick={handleIncrease}>Increase</button>
+                <button type="button" onClick={handleLoad}>Load</button>
             </div>
         </div>
     );

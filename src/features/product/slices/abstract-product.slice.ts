@@ -1,8 +1,8 @@
 import { createCustomProductSlice, CustomProductState, CUSTOM_PRODUCT_TYPE } from "./custom-product.slice";
 import { createGenericProductSlice, GenericProductState, GENERIC_PRODUCT_TYPE } from "./generic-product.slice";
 import { produce } from "immer";
-import { AnyAction, createAction } from "@reduxjs/toolkit";
-import { RootState } from "../../../app/store";
+import { ActionCreatorWithOptionalPayload, AnyAction, createAction } from "@reduxjs/toolkit";
+import { RootSelector, RootState } from "../../../app/store";
 import { ProductSliceName } from "./product.slices";
 
 export interface AbstractProductState {
@@ -15,12 +15,17 @@ export type ProductState = GenericProductState | CustomProductState | null | und
 export type VanillaProductReducer<T = ProductState> = (state: T, action: AnyAction) => ProductState;
 export type ProductReducer<T = ProductState> = (state: T, action: AnyAction) => ProductState | void;
 
+export interface AbstractProductSliceOptions {
+    actions: {
+        setProduct: ActionCreatorWithOptionalPayload<ProductState>;
+    };
+    selectors: {
+        selectProduct: RootSelector<ProductState>;
+        selectName: RootSelector<string | undefined>;
+    }
+}
+
 export const createProductSlice = (sliceName: ProductSliceName, initialState: ProductState = null) => {
-
-    // Children
-
-    const genericProductSlice = createGenericProductSlice(sliceName);
-    const customProductSlice = createCustomProductSlice(sliceName);
 
     // Actions
 
@@ -31,6 +36,22 @@ export const createProductSlice = (sliceName: ProductSliceName, initialState: Pr
     const selectProduct = (state: RootState) => state[sliceName];
     const selectName = (state: RootState) => state[sliceName]?.name;
 
+    // Children
+
+    const options: AbstractProductSliceOptions = {
+        actions: {
+            setProduct
+        },
+        selectors: {
+            selectProduct,
+            selectName
+        }
+    }
+
+    const genericProductSlice = createGenericProductSlice(sliceName, options);
+    const customProductSlice = createCustomProductSlice(sliceName);
+
+    
     // Reducer
 
     const reducer: VanillaProductReducer = (state = initialState, action) => {
@@ -53,13 +74,12 @@ export const createProductSlice = (sliceName: ProductSliceName, initialState: Pr
         actions: {
             ...genericProductSlice.actions,
             ...customProductSlice.actions,
-            setProduct
+            ...options.actions
         },
         selectors: {
             ...genericProductSlice.selectors,
             ...customProductSlice.selectors,
-            selectProduct,
-            selectName
+            ...options.selectors
         }
     };
 };

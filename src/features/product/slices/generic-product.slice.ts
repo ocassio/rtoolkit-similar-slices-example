@@ -1,7 +1,7 @@
 import { createAction, createSelector } from "@reduxjs/toolkit";
 import { ProductSliceName } from "./product.slices";
-import { RootState } from "../../../app/store";
-import { AbstractProductState, ProductReducer } from "./abstract-product.slice";
+import { AppThunk, RootState } from "../../../app/store";
+import { AbstractProductSliceOptions, AbstractProductState, ProductReducer } from "./abstract-product.slice";
 
 export const GENERIC_PRODUCT_TYPE = "generic";
 
@@ -10,11 +10,26 @@ export interface GenericProductState extends AbstractProductState {
     count: number;
 }
 
-export const createGenericProductSlice = (sliceName: ProductSliceName) => {
+export const createGenericProductSlice = (sliceName: ProductSliceName, parent: AbstractProductSliceOptions) => {
     
     // Actions
 
     const increase = createAction<number>(sliceName + "/increase");
+
+    const loadProduct = (): AppThunk => dispatch => {
+        setTimeout(
+            () => {
+                const product: GenericProductState = {
+                    type: GENERIC_PRODUCT_TYPE,
+                    id: "456",
+                    name: "Loaded Product",
+                    count: 12
+                };
+                dispatch(parent.actions.setProduct(product));
+            },
+            3000
+        )
+    }
 
     // Selectors
 
@@ -40,7 +55,8 @@ export const createGenericProductSlice = (sliceName: ProductSliceName) => {
     return {
         reducer,
         actions: {
-            increase
+            increase,
+            loadProduct
         },
         selectors: {
             selectCount,

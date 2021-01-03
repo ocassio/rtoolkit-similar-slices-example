@@ -1,5 +1,5 @@
 import { createAction, createSelector } from "@reduxjs/toolkit";
-import { ProductSliceName } from "./product.slices";
+import { ProductSliceName, useProductActions, useProductSelectors } from "./product.slices";
 import { AppThunk, RootState } from "../../../app/store";
 import { AbstractProductSliceOptions, AbstractProductState, ProductReducer } from "./abstract-product.slice";
 
@@ -64,3 +64,6 @@ export const createGenericProductSlice = (sliceName: ProductSliceName, parent: A
         }
     };
 }
+
+export const useGenericProductActions = (name: ProductSliceName) => useProductActions(name).generic;
+export const useGenericProductSelectors = (name: ProductSliceName) => useProductSelectors(name).generic;

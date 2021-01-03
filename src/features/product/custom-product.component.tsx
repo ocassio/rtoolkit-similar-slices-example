@@ -2,12 +2,14 @@ import React, { ChangeEventHandler, useContext, useEffect, useState } from "reac
 import { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ProductContext } from "./product.context";
-import { useProductActions, useProductSelectors } from "./slices/product.slices";
+import { useCustomProductActions, useCustomProductSelectors } from "./slices/custom-product.slice";
+import { useProductSelectors } from "./slices/product.slices";
 
 const CustomProduct: FC = () => {
     const sliceName = useContext(ProductContext);
 
-    const { selectName, selectChars, selectLoading } = useProductSelectors(sliceName);
+    const { selectName } = useProductSelectors(sliceName);
+    const { selectLoading, selectChars } = useCustomProductSelectors(sliceName);
     const name = useSelector(selectName);
     const chars = useSelector(selectChars);
     const loading = useSelector(selectLoading);
@@ -23,7 +25,7 @@ const CustomProduct: FC = () => {
     }
 
     const dispatch = useDispatch();
-    const { setChar, loadChars } = useProductActions(sliceName);
+    const { setChar, loadChars } = useCustomProductActions(sliceName);
 
     useEffect(() => {
         dispatch(loadChars());

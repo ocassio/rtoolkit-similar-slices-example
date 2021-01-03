@@ -9,6 +9,8 @@ export enum ProductSliceName {
     ONE_MORE_PRODUCT = "oneMoreProduct"
 }
 
+export type ProductType = typeof GENERIC_PRODUCT_TYPE | typeof CUSTOM_PRODUCT_TYPE;
+
 type ProductSlices = Record<ProductSliceName, ProductSlice>;
 
 let slices: ProductSlices | null = null;

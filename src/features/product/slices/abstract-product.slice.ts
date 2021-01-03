@@ -72,13 +72,13 @@ export const createProductSlice = (sliceName: ProductSliceName, initialState: Pr
     return {
         reducer,
         actions: {
-            ...genericProductSlice.actions,
-            ...customProductSlice.actions,
+            generic: genericProductSlice.actions,
+            custom: customProductSlice.actions,
             ...options.actions
         },
         selectors: {
-            ...genericProductSlice.selectors,
-            ...customProductSlice.selectors,
+            generic: genericProductSlice.selectors,
+            custom: customProductSlice.selectors,
             ...options.selectors
         }
     };

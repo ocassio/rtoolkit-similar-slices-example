@@ -1,5 +1,5 @@
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
-import { ProductSliceName } from "./product.slices";
+import { ProductSliceName, useProductActions, useProductSelectors } from "./product.slices";
 import { RootState } from "../../../app/store";
 import { AbstractProductState, ProductReducer } from "./abstract-product.slice";
 
@@ -75,3 +75,6 @@ export const createCustomProductSlice = (sliceName: ProductSliceName) => {
         }
     };
 } 
+
+export const useCustomProductActions = (name: ProductSliceName) => useProductActions(name).custom;
+export const useCustomProductSelectors = (name: ProductSliceName) => useProductSelectors(name).custom;

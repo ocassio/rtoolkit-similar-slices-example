@@ -1,25 +1,13 @@
-import React, { ChangeEventHandler, useContext, useEffect, useState } from "react";
+import React, { ChangeEventHandler, useEffect, useState } from "react";
 import { FC } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { ProductContext } from "./product.context";
-import { useCustomProductActions, useCustomProductSelectors } from "./slices/custom-product.slice";
-import { useProductSelectors } from "./slices/product.slices";
+import { selectName } from "./slices/abstract-product.slice";
+import { loadChars, selectChars, selectLoading, setChar } from "./slices/custom-product.slice";
+import { useProductDispatch, useProductSelector } from "./slices/product.hooks";
 
-const CustomProduct: FC = () => {
-    const sliceName = useContext(ProductContext);
-
-    const { selectName } = useProductSelectors(sliceName);
-    const {
-        selectLoading,
-        selectChars,
-        selectVersion,
-        chars: {
-            selectVersion: selectCharsVersion
-        }
-    } = useCustomProductSelectors(sliceName);
-    const name = useSelector(selectName);
-    const chars = useSelector(selectChars);
-    const loading = useSelector(selectLoading);
+const CustomProduct: FC = () => {    
+    const name = useProductSelector(selectName);
+    const chars = useProductSelector(selectChars);
+    const loading = useProductSelector(selectLoading);
 
     const [newCharName, setNewCharName] = useState("");
     const handleNewCharNameChange: ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -31,19 +19,11 @@ const CustomProduct: FC = () => {
         setNewCharValue(event.target.value);
     }
 
-    const dispatch = useDispatch();
-    const {
-        setChar,
-        loadChars,
-        nextVersion,
-        chars: {
-            nextVersion: nextCharsVersion
-        }
-    } = useCustomProductActions(sliceName);
+    const dispatch = useProductDispatch();
 
     useEffect(() => {
         dispatch(loadChars());
-    }, [dispatch, loadChars]);
+    }, [dispatch]);
 
     const handleSet = () => {
         dispatch(setChar({
@@ -52,17 +32,17 @@ const CustomProduct: FC = () => {
         }));
     }
 
-    const version = useSelector(selectVersion);
-    const handleNextVersion = () => dispatch(nextVersion());
+    // const version = useSelector(selectVersion);
+    // const handleNextVersion = () => dispatch(nextVersion());
 
-    const charsVersion = useSelector(selectCharsVersion);
-    const handleNextCharsVersion = () => dispatch(nextCharsVersion());
+    // const charsVersion = useSelector(selectCharsVersion);
+    // const handleNextCharsVersion = () => dispatch(nextCharsVersion());
 
     return (
         <div>
             <div>Name: {name}</div>
-            <div>Version: {version}</div>
-            <button type="button" onClick={handleNextVersion}>Next Version</button>
+            {/* <div>Version: {version}</div>
+            <button type="button" onClick={handleNextVersion}>Next Version</button> */}
             {loading ? (
                 <div>Loading...</div>
             ) : (
@@ -74,10 +54,10 @@ const CustomProduct: FC = () => {
                             </li>
                         ))}
                     </ul>
-                    <div>
+                    {/* <div>
                         <div>Chars Version: {charsVersion}</div>
                         <button type="button" onClick={handleNextCharsVersion}>Next Chars Version</button>
-                    </div>
+                    </div> */}
                     <div>
                         <label>
                             Char:

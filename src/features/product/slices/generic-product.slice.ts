@@ -1,8 +1,7 @@
-import { createAction, createReducer, createSelector } from "@reduxjs/toolkit";
-import { ProductSliceName, useProductActions, useProductSelectors } from "./product.slices";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../../../app/store";
-import { AbstractProductSliceOptions, AbstractProductState } from "./abstract-product.slice";
-import { createVersionFeatureSlice, VersionedState, FeatureSliceParams } from "./features/version.feature.slice";
+import { AbstractProductState, setProduct, StandaloneProductState } from "./abstract-product.slice";
+import { VersionedState } from "./features/version.feature.slice";
 
 export const GENERIC_PRODUCT_TYPE = "generic";
 
@@ -13,74 +12,41 @@ export interface GenericProductState extends AbstractProductState, VersionedStat
 
 const initialState: GenericProductState = null!!;
 
-interface GenericProductSliceParams extends FeatureSliceParams<GenericProductState> {
-    parent: AbstractProductSliceOptions;
-}
-
-export const createGenericProductSlice = ({ prefix, baseSelector, parent }: GenericProductSliceParams) => {
-    
-    // Actions
-
-    const increase = createAction<number>(prefix + "/increase");
-
-    const loadProduct = (): AppThunk => dispatch => {
-        setTimeout(
-            () => {
-                const product: GenericProductState = {
-                    type: GENERIC_PRODUCT_TYPE,
-                    id: "456",
-                    name: "Loaded Product",
-                    count: 12,
-                    version: 0
-                };
-                dispatch(parent.actions.setProduct(product));
-            },
-            3000
-        )
-    }
-
-    // Selectors
-
-    const selectCount = (state: GenericProductState) => state.count;
-
-    const selectCountX2 = createSelector(
-        selectCount,
-        count => count * 2
-    );
-
-    // Features
-
-    const versionFeatureSlice = createVersionFeatureSlice({
-        prefix,
-        baseSelector
-    });
-
-    // Reducer
-
-    const reducer = createReducer(initialState, builder => {
-        builder.addCase(increase, (state, action) => {
-            state.count += action.payload;
-        });
-
-        builder.addDefaultCase((state, action) => {
-            versionFeatureSlice.reducer(state, action);
-        });
-    });
-
-    return {
-        reducer,
-        actions: {
-            ...versionFeatureSlice.actions,
-            increase,
-            loadProduct,
+export const loadProduct = (): AppThunk => dispatch => {
+    setTimeout(
+        () => {
+            const product: GenericProductState = {
+                type: GENERIC_PRODUCT_TYPE,
+                id: "456",
+                name: "Loaded Product",
+                count: 12,
+                version: 0
+            };
+            dispatch(setProduct(product));
         },
-        selectors: {
-            ...versionFeatureSlice.selectors,
-            selectCount,
-            selectCountX2
-        }
-    };
+        3000
+    )
 }
 
-export const useGenericProductActions = (name: ProductSliceName) => useProductActions(name).generic;
-export const useGenericProductSelectors = (name: ProductSliceName) => useProductSelectors(name).generic;
+const slice = createSlice({
+    name: "product/generic",
+    initialState,
+    reducers: {
+        increase(state, action: PayloadAction<number>) {
+            state.count += action.payload;
+        }
+    }
+});
+
+export const { increase } = slice.actions;
+
+export const genericProductReducer = slice.reducer;
+
+export const selectCount = (state: StandaloneProductState) => {
+    return state?.type === GENERIC_PRODUCT_TYPE ? state.count : 0;
+};
+
+export const selectCountX2 = createSelector(
+    selectCount,
+    count => count * 2
+);

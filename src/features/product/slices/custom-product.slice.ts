@@ -1,8 +1,8 @@
 import { createAction, createAsyncThunk, createReducer } from "@reduxjs/toolkit";
 import { ProductSliceName, useProductActions, useProductSelectors } from "./product.slices";
 import { RootState } from "../../../app/store";
-import { AbstractProductState } from "./abstract-product.slice";
-import { createVersionFeatureSlice } from "./features/version.feature.slice";
+import { AbstractProductSliceOptions, AbstractProductState } from "./abstract-product.slice";
+import { createVersionFeatureSlice, FeatureSliceParams } from "./features/version.feature.slice";
 
 export const CUSTOM_PRODUCT_TYPE = "custom";
 
@@ -18,14 +18,18 @@ export interface CustomProductState extends AbstractProductState {
 
 const initialState: CustomProductState = null!!;
 
-export const createCustomProductSlice = (sliceName: ProductSliceName) => {
+interface CustomProductSliceParams extends FeatureSliceParams<CustomProductState> {
+    parent: AbstractProductSliceOptions;
+}
+
+export const createCustomProductSlice = ({ prefix, baseSelector }: CustomProductSliceParams) => {
 
     // Actions
 
-    const setChar = createAction<{ name: string, value: string }>(sliceName + "/setChar");
+    const setChar = createAction<{ name: string, value: string }>(prefix + "/setChar");
 
     const loadChars = createAsyncThunk(
-        sliceName + "/loadChars",
+        prefix + "/loadChars",
         () => new Promise<Record<string, string>>(resolve => {
             setTimeout(
                 () => resolve({
@@ -41,8 +45,8 @@ export const createCustomProductSlice = (sliceName: ProductSliceName) => {
 
     const customProductSelector = <T> (selector: (state: CustomProductState) => T, fallbackValue: T): (state: RootState) => T => {
         return (state: RootState) => {
-            const s = state[sliceName];
-            return s?.type === CUSTOM_PRODUCT_TYPE ? selector(s) : fallbackValue;
+            const s = baseSelector(state);
+            return s ? selector(s) : fallbackValue;
         };
     }
 
@@ -52,12 +56,12 @@ export const createCustomProductSlice = (sliceName: ProductSliceName) => {
     // Features
 
     const versionFeatureSlice = createVersionFeatureSlice({
-        prefix: sliceName,
+        prefix,
         baseSelector: customProductSelector(s => s, null)
     });
 
     const charsVersionFeatureSlice = createVersionFeatureSlice({
-        prefix: sliceName + "/chars",
+        prefix: prefix + "/chars",
         baseSelector: customProductSelector(s => s.chars, null)
     });
 

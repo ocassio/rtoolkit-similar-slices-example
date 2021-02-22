@@ -9,7 +9,7 @@ const defaultInitialState: VersionedState = {
     version: 0
 }
 
-interface FeatureSliceParams<T> {
+export interface FeatureSliceParams<T> {
     prefix: string;
     initialState?: T;
     baseSelector: RootSelector<T | null | undefined>;

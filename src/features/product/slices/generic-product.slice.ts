@@ -1,8 +1,8 @@
 import { createAction, createReducer, createSelector } from "@reduxjs/toolkit";
 import { ProductSliceName, useProductActions, useProductSelectors } from "./product.slices";
-import { AppThunk, RootState } from "../../../app/store";
+import { AppThunk } from "../../../app/store";
 import { AbstractProductSliceOptions, AbstractProductState } from "./abstract-product.slice";
-import { createVersionFeatureSlice, VersionedState } from "./features/version.feature.slice";
+import { createVersionFeatureSlice, VersionedState, FeatureSliceParams } from "./features/version.feature.slice";
 
 export const GENERIC_PRODUCT_TYPE = "generic";
 
@@ -13,11 +13,15 @@ export interface GenericProductState extends AbstractProductState, VersionedStat
 
 const initialState: GenericProductState = null!!;
 
-export const createGenericProductSlice = (sliceName: ProductSliceName, parent: AbstractProductSliceOptions) => {
+interface GenericProductSliceParams extends FeatureSliceParams<GenericProductState> {
+    parent: AbstractProductSliceOptions;
+}
+
+export const createGenericProductSlice = ({ prefix, baseSelector, parent }: GenericProductSliceParams) => {
     
     // Actions
 
-    const increase = createAction<number>(sliceName + "/increase");
+    const increase = createAction<number>(prefix + "/increase");
 
     const loadProduct = (): AppThunk => dispatch => {
         setTimeout(
@@ -37,10 +41,7 @@ export const createGenericProductSlice = (sliceName: ProductSliceName, parent: A
 
     // Selectors
 
-    const selectCount = (state: RootState) => {
-        const s = state[sliceName];
-        return s?.type === GENERIC_PRODUCT_TYPE ? s.count : 0;
-    }
+    const selectCount = (state: GenericProductState) => state.count;
 
     const selectCountX2 = createSelector(
         selectCount,
@@ -50,11 +51,8 @@ export const createGenericProductSlice = (sliceName: ProductSliceName, parent: A
     // Features
 
     const versionFeatureSlice = createVersionFeatureSlice({
-        prefix: sliceName,
-        baseSelector: state => {
-            const s = state[sliceName];
-            return s?.type === GENERIC_PRODUCT_TYPE ? s : null;
-        }
+        prefix,
+        baseSelector
     });
 
     // Reducer

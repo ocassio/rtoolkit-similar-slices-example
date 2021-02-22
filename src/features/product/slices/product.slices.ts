@@ -3,7 +3,8 @@ import { CUSTOM_PRODUCT_TYPE } from "./custom-product.slice";
 import { GENERIC_PRODUCT_TYPE } from "./generic-product.slice";
 
 export type ProductSlice = ReturnType<typeof createProductSlice>;
-export enum ProductSliceName {
+export type ProductSliceName = string;
+export enum ProductSliceNames {
     PRODUCT = "product",
     POPUP_PRODUCT = "popupProduct",
     ONE_MORE_PRODUCT = "oneMoreProduct"
@@ -15,30 +16,42 @@ type ProductSlices = Record<ProductSliceName, ProductSlice>;
 
 let slices: ProductSlices | null = null;
 const createSlices = (): ProductSlices => ({
-    product: createProductSlice(ProductSliceName.PRODUCT, {
-        type: GENERIC_PRODUCT_TYPE,
-        id: "1",
-        name: "Product 1",
-        count: 1,
-        version: 0
+    product: createProductSlice({
+        prefix: ProductSliceNames.PRODUCT,
+        baseSelector: state => state.product,
+        initialState: {
+            type: GENERIC_PRODUCT_TYPE,
+            id: "1",
+            name: "Product 1",
+            count: 1,
+            version: 0
+        }
     }),
-    popupProduct: createProductSlice(ProductSliceName.POPUP_PRODUCT, {
-        type: GENERIC_PRODUCT_TYPE,
-        id: "2",
-        name: "Product 2",
-        count: -12,
-        version: 12
+    popupProduct: createProductSlice({
+        prefix: ProductSliceNames.POPUP_PRODUCT,
+        baseSelector: state => state.popupProduct,
+        initialState: {
+            type: GENERIC_PRODUCT_TYPE,
+            id: "2",
+            name: "Product 2",
+            count: -12,
+            version: 12
+        }
     }),
-    oneMoreProduct: createProductSlice(ProductSliceName.ONE_MORE_PRODUCT, {
-        type: CUSTOM_PRODUCT_TYPE,
-        id: "3",
-        name: "Product 3",
-        version: 1,
-        chars: {
-            values: {},
-            version: 7
-        },
-        loading: false
+    oneMoreProduct: createProductSlice({
+        prefix: ProductSliceNames.ONE_MORE_PRODUCT,
+        baseSelector: state => state.oneMoreProduct,
+        initialState: {
+            type: CUSTOM_PRODUCT_TYPE,
+            id: "3",
+            name: "Product 3",
+            version: 1,
+            chars: {
+                values: {},
+                version: 7
+            },
+            loading: false
+        }
     })
 });
 

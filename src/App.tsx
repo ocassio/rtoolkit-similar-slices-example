@@ -2,20 +2,25 @@ import React from 'react';
 import GenericProduct from "./features/product/generic-product.component";
 import CustomProduct from "./features/product/custom-product.component";
 import { ProductContext } from './features/product/product.context';
-import { ProductSliceName } from './features/product/slices/product.slices';
+import { ProductSliceNames } from './features/product/slices/product.slices';
+import Bundle from './features/bundle/bundle.component';
 
 function App() {
   return (
     <div>
-      <ProductContext.Provider value={ProductSliceName.PRODUCT}>
+      <h1>Products</h1>
+      <ProductContext.Provider value={ProductSliceNames.PRODUCT}>
         <GenericProduct />
       </ProductContext.Provider>
-      <ProductContext.Provider value={ProductSliceName.POPUP_PRODUCT}>
+      <ProductContext.Provider value={ProductSliceNames.POPUP_PRODUCT}>
         <GenericProduct />
       </ProductContext.Provider>
-      <ProductContext.Provider value={ProductSliceName.ONE_MORE_PRODUCT}>
+      <ProductContext.Provider value={ProductSliceNames.ONE_MORE_PRODUCT}>
         <CustomProduct />
       </ProductContext.Provider>
+
+      <h1>Bundle</h1>
+      <Bundle />
     </div>
   );
 }

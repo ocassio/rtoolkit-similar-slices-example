@@ -2,38 +2,38 @@ import { createCustomProductSlice, CustomProductState, CUSTOM_PRODUCT_TYPE } fro
 import { createGenericProductSlice, GenericProductState, GENERIC_PRODUCT_TYPE } from "./generic-product.slice";
 import { ActionCreatorWithOptionalPayload, AnyAction, createAction, createReducer } from "@reduxjs/toolkit";
 import { RootSelector, RootState } from "../../../app/store";
-import { ProductSliceName } from "./product.slices";
+import { FeatureSliceParams } from "./features/version.feature.slice";
 
 export interface AbstractProductState {
     id: string;
     name: string;
 }
 
-export type ProductState = GenericProductState | CustomProductState | null | undefined;
+export type ProductState = GenericProductState | CustomProductState;
+export type StandaloneProductState = ProductState | null | undefined;
 
-export type VanillaProductReducer<T = ProductState> = (state: T, action: AnyAction) => ProductState;
-export type ProductReducer<T = ProductState> = (state: T, action: AnyAction) => ProductState | void;
+export type VanillaProductReducer<T = StandaloneProductState> = (state: T, action: AnyAction) => StandaloneProductState;
 
 export interface AbstractProductSliceOptions {
     actions: {
-        setProduct: ActionCreatorWithOptionalPayload<ProductState>;
+        setProduct: ActionCreatorWithOptionalPayload<StandaloneProductState>;
     };
     selectors: {
-        selectProduct: RootSelector<ProductState>;
+        selectProduct: RootSelector<StandaloneProductState>;
         selectName: RootSelector<string | undefined>;
     }
 }
 
-export const createProductSlice = (sliceName: ProductSliceName, initialState: ProductState = null) => {
+export const createProductSlice = ({ prefix, baseSelector, initialState }: FeatureSliceParams<StandaloneProductState>) => {
 
     // Actions
 
-    const setProduct = createAction<ProductState>(sliceName + "/set");
+    const setProduct = createAction<StandaloneProductState>(prefix + "/set");
 
     // Selectors
 
-    const selectProduct = (state: RootState) => state[sliceName];
-    const selectName = (state: RootState) => state[sliceName]?.name;
+    const selectProduct = baseSelector;
+    const selectName = (state: RootState) => baseSelector(state)?.name;
 
     // Children
 
@@ -47,8 +47,16 @@ export const createProductSlice = (sliceName: ProductSliceName, initialState: Pr
         }
     }
 
-    const genericProductSlice = createGenericProductSlice(sliceName, options);
-    const customProductSlice = createCustomProductSlice(sliceName);
+    const genericProductSlice = createGenericProductSlice({
+        prefix,
+        baseSelector: state => baseSelector(state) as GenericProductState,
+        parent: options
+    });
+    const customProductSlice = createCustomProductSlice({
+        prefix,
+        baseSelector: state => baseSelector(state) as CustomProductState,
+        parent: options
+    });
 
     
     // Reducer

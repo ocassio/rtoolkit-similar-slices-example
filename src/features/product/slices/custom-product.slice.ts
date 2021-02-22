@@ -1,15 +1,22 @@
-import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAction, createAsyncThunk, createReducer } from "@reduxjs/toolkit";
 import { ProductSliceName, useProductActions, useProductSelectors } from "./product.slices";
 import { RootState } from "../../../app/store";
-import { AbstractProductState, ProductReducer } from "./abstract-product.slice";
+import { AbstractProductState } from "./abstract-product.slice";
+import { createVersionFeatureSlice } from "./features/version.feature.slice";
 
 export const CUSTOM_PRODUCT_TYPE = "custom";
 
 export interface CustomProductState extends AbstractProductState {
     type: typeof CUSTOM_PRODUCT_TYPE;
-    chars: Record<string, string>;
+    version: number;
+    chars: {
+        values: Record<string, string>;
+        version: number;
+    }
     loading: boolean;
 }
+
+const initialState: CustomProductState = null!!;
 
 export const createCustomProductSlice = (sliceName: ProductSliceName) => {
 
@@ -39,39 +46,61 @@ export const createCustomProductSlice = (sliceName: ProductSliceName) => {
         };
     }
 
-    const selectChars = customProductSelector(state => state.chars, {});
+    const selectChars = customProductSelector(state => state.chars.values, {});
     const selectLoading = customProductSelector(state => state.loading, false);
+
+    // Features
+
+    const versionFeatureSlice = createVersionFeatureSlice({
+        prefix: sliceName,
+        baseSelector: customProductSelector(s => s, null)
+    });
+
+    const charsVersionFeatureSlice = createVersionFeatureSlice({
+        prefix: sliceName + "/chars",
+        baseSelector: customProductSelector(s => s.chars, null)
+    });
 
     // Reducer
 
-    const reducer: ProductReducer<CustomProductState> = (state, action) => {
-        if (setChar.match(action)) {
+    const reducer = createReducer(initialState, builder => {
+        builder.addCase(setChar, (state, action) => {
             const { name, value } = action.payload;
-            state.chars[name] = value;
-            return;
-        }
+            state.chars.values[name] = value;
+        });
 
-        if (loadChars.pending.match(action)) {
+        builder.addCase(loadChars.pending, state => {
             state.loading = true;
-            return;
-        }
+        });
 
-        if (loadChars.fulfilled.match(action)) {
-            state.chars = action.payload;
+        builder.addCase(loadChars.fulfilled, (state, action) => {
+            state.chars.values = action.payload;
             state.loading = false;
-            return;
-        }
-    }
+        });
+
+        builder.addDefaultCase((state, action) => {
+            versionFeatureSlice.reducer(state, action);
+            charsVersionFeatureSlice.reducer(state.chars, action);
+        });
+    });
 
     return {
         reducer,
         actions: {
+            ...versionFeatureSlice.actions,
             setChar,
-            loadChars
+            loadChars,
+            chars: charsVersionFeatureSlice.actions
+            // Another option:
+            // nextCharsVersion: charsVersionFeatureSlice.actions.nextVersion
         },
         selectors: {
+            ...versionFeatureSlice.selectors,
             selectChars,
-            selectLoading
+            selectLoading,
+            chars: charsVersionFeatureSlice.selectors
+            // Another option:
+            // selectCharsVersion: charsVersionFeatureSlice.selectors.selectVersion
         }
     };
 } 

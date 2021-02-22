@@ -1,7 +1,6 @@
 import { createCustomProductSlice, CustomProductState, CUSTOM_PRODUCT_TYPE } from "./custom-product.slice";
 import { createGenericProductSlice, GenericProductState, GENERIC_PRODUCT_TYPE } from "./generic-product.slice";
-import { produce } from "immer";
-import { ActionCreatorWithOptionalPayload, AnyAction, createAction } from "@reduxjs/toolkit";
+import { ActionCreatorWithOptionalPayload, AnyAction, createAction, createReducer } from "@reduxjs/toolkit";
 import { RootSelector, RootState } from "../../../app/store";
 import { ProductSliceName } from "./product.slices";
 
@@ -54,20 +53,21 @@ export const createProductSlice = (sliceName: ProductSliceName, initialState: Pr
     
     // Reducer
 
-    const reducer: VanillaProductReducer = (state = initialState, action) => {
-        return produce(state, draft => {
-            if (setProduct.match(action)) {
-                return action.payload;
-            }
-    
-            switch (draft?.type) {
+    const reducer = createReducer(initialState, builder => {
+       
+        builder.addCase(setProduct, (_state, action) => {
+            return action.payload;
+        });
+
+        builder.addDefaultCase((state, action) => {
+            switch (state?.type) {
                 case GENERIC_PRODUCT_TYPE:
-                    return genericProductSlice.reducer(draft, action);
+                    return genericProductSlice.reducer(state, action);
                 case CUSTOM_PRODUCT_TYPE:
-                    return customProductSlice.reducer(draft, action);
+                    return customProductSlice.reducer(state, action);
             }
         });
-    }
+    });
 
     return {
         reducer,

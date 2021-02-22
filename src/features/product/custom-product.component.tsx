@@ -9,7 +9,14 @@ const CustomProduct: FC = () => {
     const sliceName = useContext(ProductContext);
 
     const { selectName } = useProductSelectors(sliceName);
-    const { selectLoading, selectChars } = useCustomProductSelectors(sliceName);
+    const {
+        selectLoading,
+        selectChars,
+        selectVersion,
+        chars: {
+            selectVersion: selectCharsVersion
+        }
+    } = useCustomProductSelectors(sliceName);
     const name = useSelector(selectName);
     const chars = useSelector(selectChars);
     const loading = useSelector(selectLoading);
@@ -25,7 +32,14 @@ const CustomProduct: FC = () => {
     }
 
     const dispatch = useDispatch();
-    const { setChar, loadChars } = useCustomProductActions(sliceName);
+    const {
+        setChar,
+        loadChars,
+        nextVersion,
+        chars: {
+            nextVersion: nextCharsVersion
+        }
+    } = useCustomProductActions(sliceName);
 
     useEffect(() => {
         dispatch(loadChars());
@@ -38,9 +52,17 @@ const CustomProduct: FC = () => {
         }));
     }
 
+    const version = useSelector(selectVersion);
+    const handleNextVersion = () => dispatch(nextVersion());
+
+    const charsVersion = useSelector(selectCharsVersion);
+    const handleNextCharsVersion = () => dispatch(nextCharsVersion());
+
     return (
         <div>
             <div>Name: {name}</div>
+            <div>Version: {version}</div>
+            <button type="button" onClick={handleNextVersion}>Next Version</button>
             {loading ? (
                 <div>Loading...</div>
             ) : (
@@ -52,6 +74,10 @@ const CustomProduct: FC = () => {
                             </li>
                         ))}
                     </ul>
+                    <div>
+                        <div>Chars Version: {charsVersion}</div>
+                        <button type="button" onClick={handleNextCharsVersion}>Next Chars Version</button>
+                    </div>
                     <div>
                         <label>
                             Char:

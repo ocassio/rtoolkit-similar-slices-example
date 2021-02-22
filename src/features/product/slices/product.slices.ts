@@ -19,19 +19,25 @@ const createSlices = (): ProductSlices => ({
         type: GENERIC_PRODUCT_TYPE,
         id: "1",
         name: "Product 1",
-        count: 1
+        count: 1,
+        version: 0
     }),
     popupProduct: createProductSlice(ProductSliceName.POPUP_PRODUCT, {
         type: GENERIC_PRODUCT_TYPE,
         id: "2",
         name: "Product 2",
-        count: -12
+        count: -12,
+        version: 12
     }),
     oneMoreProduct: createProductSlice(ProductSliceName.ONE_MORE_PRODUCT, {
         type: CUSTOM_PRODUCT_TYPE,
         id: "3",
         name: "Product 3",
-        chars: {},
+        version: 1,
+        chars: {
+            values: {},
+            version: 7
+        },
         loading: false
     })
 });

@@ -5,6 +5,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export interface AbstractProductState {
     id: string;
     name: string;
+    type: string;
 }
 
 export type ProductState = GenericProductState | CustomProductState;
@@ -38,3 +39,4 @@ export const productReducer = slice.reducer;
 
 export const selectProduct = (state: StandaloneProductState) => state;
 export const selectName = (state: StandaloneProductState) => state?.name;
+export const selectType = (state: StandaloneProductState) => state?.type;

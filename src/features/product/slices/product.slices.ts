@@ -5,7 +5,8 @@ export type ProductSliceName = string;
 export enum ProductSliceNames {
     PRODUCT = "product",
     POPUP_PRODUCT = "popupProduct",
-    ONE_MORE_PRODUCT = "oneMoreProduct"
+    ONE_MORE_PRODUCT = "oneMoreProduct",
+    BUNDLE = "bundle"
 }
 
 export const createProductReducer = (sliceName: ProductSliceNames): Reducer<StandaloneProductState, AnyAction> => {

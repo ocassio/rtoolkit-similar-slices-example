@@ -6,6 +6,26 @@ import { createProductReducer, ProductSliceNames } from '../features/product/sli
 
 export const store = configureStore({
   preloadedState: {
+    bundle: {
+      id: "bundle-1",
+      name: "Dynamic Bundle",
+      products: {
+        ids: ["bp1", "bp2"],
+        entities: {
+          "bp1": {
+            type: CUSTOM_PRODUCT_TYPE,
+            id: "bp1",
+            name: "Bundle Product 1",
+            version: 1,
+            chars: {
+              values: {},
+              version: 7
+            },
+            loading: false
+          }
+        }
+      }
+    },
     product: {
       type: GENERIC_PRODUCT_TYPE,
       id: "1",

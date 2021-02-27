@@ -1,14 +1,16 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AbstractProductState, StandaloneProductState } from "./abstract-product.slice";
+import { selectVersionValue, versionFeatureReducer, VersionState } from "./features/version.feature.slice";
+import { createProductFeatureReducer } from "./product.slices";
 
 export const CUSTOM_PRODUCT_TYPE = "custom";
 
 export interface CustomProductState extends AbstractProductState {
     type: typeof CUSTOM_PRODUCT_TYPE;
-    version: number;
+    version: VersionState;
     chars: {
         values: Record<string, string>;
-        version: number;
+        version: VersionState;
     }
     loading: boolean;
 }
@@ -33,6 +35,22 @@ export const loadChars = createAsyncThunk(
     })
 );
 
+const versionReducer = createProductFeatureReducer({
+    caseName: "version",
+    reducer: versionFeatureReducer,
+    initialState: {
+        value: 0
+    }
+});
+
+const charsVersionReducer = createProductFeatureReducer({
+    caseName: "charsVersion",
+    reducer: versionFeatureReducer,
+    initialState: {
+        value: 0
+    }
+});
+
 const slice = createSlice({
     name: "product/custom",
     initialState,
@@ -51,6 +69,11 @@ const slice = createSlice({
             state.chars.values = action.payload;
             state.loading = false;
         });
+
+        builder.addDefaultCase((state, action) => {
+            versionReducer(state.version, action);
+            charsVersionReducer(state.chars.version, action);
+        });
     }
 });
 
@@ -67,3 +90,5 @@ const customProductSelector = <T> (selector: (state: CustomProductState) => T, f
 
 export const selectChars = customProductSelector(state => state.chars.values, {});
 export const selectLoading = customProductSelector(state => state.loading, false);
+export const selectVersion = customProductSelector(state => selectVersionValue(state.version), 0);
+export const selectCharsVersion = customProductSelector(state => selectVersionValue(state.chars.version), 0);

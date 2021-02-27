@@ -1,7 +1,8 @@
 import React, { ChangeEventHandler, useEffect, useState } from "react";
 import { FC } from "react";
 import { selectName } from "./slices/abstract-product.slice";
-import { loadChars, selectChars, selectLoading, setChar } from "./slices/custom-product.slice";
+import { loadChars, selectChars, selectCharsVersion, selectLoading, selectVersion, setChar } from "./slices/custom-product.slice";
+import { loadVersion, nextVersion } from "./slices/features/version.feature.slice";
 import { useProductDispatch, useProductSelector, useProductAsyncThunk } from "./slices/product.hooks";
 
 const CustomProduct: FC = () => {    
@@ -33,17 +34,24 @@ const CustomProduct: FC = () => {
         }));
     }
 
-    // const version = useSelector(selectVersion);
-    // const handleNextVersion = () => dispatch(nextVersion());
+    const versionDispatch = useProductDispatch("version");
+    const version = useProductSelector(selectVersion);
+    const bindedLoadVersion = useProductAsyncThunk(loadVersion, "version");
+    const handleNextVersion = () => versionDispatch(nextVersion());
+    const handleLoadVersion = () => versionDispatch(bindedLoadVersion());
 
-    // const charsVersion = useSelector(selectCharsVersion);
-    // const handleNextCharsVersion = () => dispatch(nextCharsVersion());
+    const charsVersionDispatch = useProductDispatch("charsVersion");
+    const charsVersion = useProductSelector(selectCharsVersion);
+    const bindedLoadCharsVersion = useProductAsyncThunk(loadVersion, "charsVersion");
+    const handleNextCharsVersion = () => charsVersionDispatch(nextVersion());
+    const handleLoadCharsVersion = () => versionDispatch(bindedLoadCharsVersion());
 
     return (
         <div>
             <div>Name: {name}</div>
-            {/* <div>Version: {version}</div>
-            <button type="button" onClick={handleNextVersion}>Next Version</button> */}
+            <div>Version: {version}</div>
+            <button type="button" onClick={handleNextVersion}>Next Version</button>
+            <button type="button" onClick={handleLoadVersion}>Load Vesion</button>
             {loading ? (
                 <div>Loading...</div>
             ) : (
@@ -55,10 +63,11 @@ const CustomProduct: FC = () => {
                             </li>
                         ))}
                     </ul>
-                    {/* <div>
+                    <div>
                         <div>Chars Version: {charsVersion}</div>
                         <button type="button" onClick={handleNextCharsVersion}>Next Chars Version</button>
-                    </div> */}
+                        <button type="button" onClick={handleLoadCharsVersion}>Load Chars Version</button>
+                    </div>
                     <div>
                         <label>
                             Char:

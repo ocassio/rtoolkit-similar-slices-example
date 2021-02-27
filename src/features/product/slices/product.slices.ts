@@ -17,3 +17,22 @@ export const createProductReducer = (sliceName: ProductSliceNames): Reducer<Stan
         return state;
     }
 }
+
+export interface ProductFeatureReducerParams<State> {
+    caseName: string,
+    initialState: State,
+    reducer: Reducer<State, AnyAction>
+}
+
+export const createProductFeatureReducer = <State> ({
+    caseName,
+    initialState,
+    reducer
+}: ProductFeatureReducerParams<State>): Reducer<State, AnyAction> => {
+    return (state = initialState, action) => {
+        if (action.meta?.featureCase === caseName || action.meta?.arg?.meta?.featureCase === caseName) {
+            return reducer(state, action);
+        }
+        return state;
+    }
+}

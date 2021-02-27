@@ -16,10 +16,14 @@ export const store = configureStore({
             type: CUSTOM_PRODUCT_TYPE,
             id: "bp1",
             name: "Bundle Product 1",
-            version: 1,
+            version: {
+              value: 1
+            },
             chars: {
               values: {},
-              version: 7
+              version: {
+                value: 7
+              }
             },
             loading: false
           }
@@ -31,23 +35,31 @@ export const store = configureStore({
       id: "1",
       name: "Product 1",
       count: 1,
-      version: 0
+      version: {
+        value: 0
+      }
     },
     popupProduct: {
       type: GENERIC_PRODUCT_TYPE,
       id: "2",
       name: "Product 2",
       count: 5,
-      version: 0
+      version: {
+        value: 0
+      }
     },
     oneMoreProduct: {
       type: CUSTOM_PRODUCT_TYPE,
       id: "3",
       name: "Product 3",
-      version: 1,
+      version: {
+        value: 1
+      },
       chars: {
         values: {},
-        version: 7
+        version: {
+          value: 7
+        }
       },
       loading: false
     }

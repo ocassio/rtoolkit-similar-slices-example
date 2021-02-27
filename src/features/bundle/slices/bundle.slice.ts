@@ -35,7 +35,9 @@ const slice = createSlice({
                 name: `Product ${id}`,
                 type: GENERIC_PRODUCT_TYPE,
                 count: 0,
-                version: 0
+                version: {
+                    value: 0
+                }
             })
         }
     },

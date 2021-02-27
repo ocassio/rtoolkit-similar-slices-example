@@ -15,18 +15,20 @@ const PRODUCT_SLICE_SELECTORS = {
     bundle: selectBundleProductById
 }
 
-export const useProductDispatch = (): Dispatch<any> => {
+export const useProductDispatch = (featureCase?: string): Dispatch<any> => {
     const dispatch = useDispatch();
     const slice = useContext(ProductContext);
     const bundleProductId = useContext(BundleProductContext);
     
     return useCallback((action: AnyAction) => {
-        action.meta = Object.assign(action.meta || {}, {
+        const meta: ProductMeta = {
             slice,
-            bundleProductId: bundleProductId
-        });
+            bundleProductId,
+            featureCase
+        }
+        action.meta = Object.assign(action.meta || {}, meta);
         dispatch(action);
-    }, [dispatch, slice, bundleProductId])
+    }, [dispatch, slice, bundleProductId, featureCase])
 }
 
 export const useProductSelector = <T> (selector: (state: StandaloneProductState) => T): T => {
@@ -44,6 +46,7 @@ export const useProductSelector = <T> (selector: (state: StandaloneProductState)
 export interface ProductMeta {
     slice: ProductSliceNames;
     bundleProductId?: EntityId;
+    featureCase?: string;
 }
 
 export type WithProductMeta<T extends {} = {}> = T & {
@@ -51,7 +54,8 @@ export type WithProductMeta<T extends {} = {}> = T & {
 }
 
 export const useProductAsyncThunk = <Returned, ThunkArg, ThunkApiConfig> (
-    thunk: AsyncThunk<Returned, ThunkArg, ThunkApiConfig>
+    thunk: AsyncThunk<Returned, ThunkArg, ThunkApiConfig>,
+    featureCase?: string
 ): AsyncThunk<Returned, ThunkArg, ThunkApiConfig> => {
     const slice = useContext(ProductContext);
     const bundleProductId = useContext(BundleProductContext);
@@ -61,7 +65,8 @@ export const useProductAsyncThunk = <Returned, ThunkArg, ThunkApiConfig> (
             const meta: WithProductMeta = {
                 meta: {
                     slice,
-                    bundleProductId
+                    bundleProductId,
+                    featureCase
                 }
             };
             const argWithMeta: ThunkArg & WithProductMeta = Object.assign({}, arg, meta);
@@ -72,10 +77,13 @@ export const useProductAsyncThunk = <Returned, ThunkArg, ThunkApiConfig> (
         Object.assign(actionCreator, thunk);
     
         return actionCreator;
-    }, [thunk, slice, bundleProductId]);
+    }, [thunk, slice, bundleProductId, featureCase]);
 }
 
-export const useProductThunk = <ThunkArg> (actionCreator: (arg?: ThunkArg) => AppThunk): (arg?: ThunkArg) => AppThunk => {
+export const useProductThunk = <ThunkArg> (
+    actionCreator: (arg?: ThunkArg) => AppThunk,
+    featureCase?: string
+): (arg?: ThunkArg) => AppThunk => {
     const slice = useContext(ProductContext);
     const bundleProductId = useContext(BundleProductContext);
 
@@ -84,12 +92,13 @@ export const useProductThunk = <ThunkArg> (actionCreator: (arg?: ThunkArg) => Ap
             const meta: WithProductMeta = {
                 meta: {
                     slice,
-                    bundleProductId
+                    bundleProductId,
+                    featureCase
                 }
             };
             const argWithMeta: ThunkArg & WithProductMeta = Object.assign({}, arg, meta);
     
             return actionCreator(argWithMeta);
         })
-    }, [actionCreator, slice, bundleProductId]);
+    }, [actionCreator, slice, bundleProductId, featureCase]);
 }

@@ -1,14 +1,15 @@
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../../../app/store";
 import { AbstractProductState, setProduct, StandaloneProductState } from "./abstract-product.slice";
-import { VersionedState } from "./features/version.feature.slice";
+import { selectVersionValue, versionFeatureReducer, VersionState } from "./features/version.feature.slice";
 import { WithProductMeta } from "./product.hooks";
 
 export const GENERIC_PRODUCT_TYPE = "generic";
 
-export interface GenericProductState extends AbstractProductState, VersionedState {
+export interface GenericProductState extends AbstractProductState {
     type: typeof GENERIC_PRODUCT_TYPE;
     count: number;
+    version: VersionState;
 }
 
 const initialState: GenericProductState = null!!;
@@ -22,7 +23,9 @@ export const loadProduct = (arg?: WithProductMeta): AppThunk => dispatch => {
                 id: "456",
                 name: "Loaded Product",
                 count: 12,
-                version: 0
+                version: {
+                    value: 0
+                }
             };
             dispatch(setProduct(product, arg?.meta));
         },
@@ -37,6 +40,11 @@ const slice = createSlice({
         increase(state, action: PayloadAction<number>) {
             state.count += action.payload;
         }
+    },
+    extraReducers(builder) {
+        builder.addDefaultCase((state, action) => {
+            versionFeatureReducer(state.version, action);
+        });
     }
 });
 
@@ -44,11 +52,18 @@ export const { increase } = slice.actions;
 
 export const genericProductReducer = slice.reducer;
 
-export const selectCount = (state: StandaloneProductState) => {
-    return state?.type === GENERIC_PRODUCT_TYPE ? state.count : 0;
-};
+const genericProductSelector = <T> (selector: (state: GenericProductState) => T, fallbackValue: T): (state: StandaloneProductState) => T => {
+    return (state: StandaloneProductState) => {
+        const s = state?.type === GENERIC_PRODUCT_TYPE ? state : null;
+        return s ? selector(s) : fallbackValue;
+    };
+}
+
+export const selectCount = genericProductSelector(state => state.count, 0);
 
 export const selectCountX2 = createSelector(
     selectCount,
     count => count * 2
 );
+
+export const selectVersion = genericProductSelector(state => selectVersionValue(state.version), 0);

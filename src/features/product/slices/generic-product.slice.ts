@@ -1,88 +1,70 @@
-import { createAction, createReducer, createSelector } from "@reduxjs/toolkit";
-import { ProductSliceName, useProductActions, useProductSelectors } from "./product.slices";
-import { AppThunk, RootState } from "../../../app/store";
-import { AbstractProductSliceOptions, AbstractProductState } from "./abstract-product.slice";
-import { createVersionFeatureSlice, VersionedState } from "./features/version.feature.slice";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { AppThunk } from "../../../app/store";
+import { AbstractProductState, setProduct, StandaloneProductState } from "./abstract-product.slice";
+import { selectDoubledVersionValue, selectVersionValue, versionFeatureReducer, VersionState } from "./features/version.feature.slice";
+import { WithProductMeta } from "./product.hooks";
 
 export const GENERIC_PRODUCT_TYPE = "generic";
 
-export interface GenericProductState extends AbstractProductState, VersionedState {
+export interface GenericProductState extends AbstractProductState {
     type: typeof GENERIC_PRODUCT_TYPE;
     count: number;
+    version: VersionState;
 }
 
 const initialState: GenericProductState = null!!;
 
-export const createGenericProductSlice = (sliceName: ProductSliceName, parent: AbstractProductSliceOptions) => {
-    
-    // Actions
-
-    const increase = createAction<number>(sliceName + "/increase");
-
-    const loadProduct = (): AppThunk => dispatch => {
-        setTimeout(
-            () => {
-                const product: GenericProductState = {
-                    type: GENERIC_PRODUCT_TYPE,
-                    id: "456",
-                    name: "Loaded Product",
-                    count: 12,
-                    version: 0
-                };
-                dispatch(parent.actions.setProduct(product));
-            },
-            3000
-        )
-    }
-
-    // Selectors
-
-    const selectCount = (state: RootState) => {
-        const s = state[sliceName];
-        return s?.type === GENERIC_PRODUCT_TYPE ? s.count : 0;
-    }
-
-    const selectCountX2 = createSelector(
-        selectCount,
-        count => count * 2
-    );
-
-    // Features
-
-    const versionFeatureSlice = createVersionFeatureSlice({
-        prefix: sliceName,
-        baseSelector: state => {
-            const s = state[sliceName];
-            return s?.type === GENERIC_PRODUCT_TYPE ? s : null;
-        }
-    });
-
-    // Reducer
-
-    const reducer = createReducer(initialState, builder => {
-        builder.addCase(increase, (state, action) => {
-            state.count += action.payload;
-        });
-
-        builder.addDefaultCase((state, action) => {
-            versionFeatureSlice.reducer(state, action);
-        });
-    });
-
-    return {
-        reducer,
-        actions: {
-            ...versionFeatureSlice.actions,
-            increase,
-            loadProduct,
+// If you are writing custom thunks, you should handle passing meta data to dispatched actions manually.
+export const loadProduct = (arg?: WithProductMeta): AppThunk => dispatch => {
+    setTimeout(
+        () => {
+            const product: GenericProductState = {
+                type: GENERIC_PRODUCT_TYPE,
+                id: "456",
+                name: "Loaded Product",
+                count: 12,
+                version: {
+                    value: 0
+                }
+            };
+            dispatch(setProduct(product, arg?.meta));
         },
-        selectors: {
-            ...versionFeatureSlice.selectors,
-            selectCount,
-            selectCountX2
+        3000
+    )
+}
+
+const slice = createSlice({
+    name: "product/generic",
+    initialState,
+    reducers: {
+        increase(state, action: PayloadAction<number>) {
+            state.count += action.payload;
         }
+    },
+    extraReducers(builder) {
+        builder.addDefaultCase((state, action) => {
+            versionFeatureReducer(state.version, action);
+        });
+    }
+});
+
+export const { increase } = slice.actions;
+
+export const genericProductReducer = slice.reducer;
+
+const genericProductSelector = <T> (selector: (state: GenericProductState) => T, fallbackValue: T): (state: StandaloneProductState) => T => {
+    return (state: StandaloneProductState) => {
+        const s = state?.type === GENERIC_PRODUCT_TYPE ? state : null;
+        return s ? selector(s) : fallbackValue;
     };
 }
 
-export const useGenericProductActions = (name: ProductSliceName) => useProductActions(name).generic;
-export const useGenericProductSelectors = (name: ProductSliceName) => useProductSelectors(name).generic;
+export const selectCount = genericProductSelector(state => state.count, 0);
+
+export const selectCountX2 = createSelector(
+    selectCount,
+    count => count * 2
+);
+
+export const selectVersion = genericProductSelector(state => selectVersionValue(state.version), 0);
+export const selectDoubledVersion = genericProductSelector(state => selectDoubledVersionValue(state.version), 0);

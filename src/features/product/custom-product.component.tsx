@@ -1,25 +1,14 @@
-import React, { ChangeEventHandler, useContext, useEffect, useState } from "react";
+import React, { ChangeEventHandler, useEffect, useState } from "react";
 import { FC } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { ProductContext } from "./product.context";
-import { useCustomProductActions, useCustomProductSelectors } from "./slices/custom-product.slice";
-import { useProductSelectors } from "./slices/product.slices";
+import { selectName } from "./slices/abstract-product.slice";
+import { CHARS_VERSION_CASE, loadChars, selectChars, selectCharsVersion, selectLoading, selectVersion, setChar, VERSION_CASE } from "./slices/custom-product.slice";
+import { loadVersion, nextVersion } from "./slices/features/version.feature.slice";
+import { useProductDispatch, useProductSelector, useProductAsyncThunk } from "./slices/product.hooks";
 
-const CustomProduct: FC = () => {
-    const sliceName = useContext(ProductContext);
-
-    const { selectName } = useProductSelectors(sliceName);
-    const {
-        selectLoading,
-        selectChars,
-        selectVersion,
-        chars: {
-            selectVersion: selectCharsVersion
-        }
-    } = useCustomProductSelectors(sliceName);
-    const name = useSelector(selectName);
-    const chars = useSelector(selectChars);
-    const loading = useSelector(selectLoading);
+const CustomProduct: FC = () => {    
+    const name = useProductSelector(selectName);
+    const chars = useProductSelector(selectChars);
+    const loading = useProductSelector(selectLoading);
 
     const [newCharName, setNewCharName] = useState("");
     const handleNewCharNameChange: ChangeEventHandler<HTMLInputElement> = (event) => {
@@ -31,19 +20,12 @@ const CustomProduct: FC = () => {
         setNewCharValue(event.target.value);
     }
 
-    const dispatch = useDispatch();
-    const {
-        setChar,
-        loadChars,
-        nextVersion,
-        chars: {
-            nextVersion: nextCharsVersion
-        }
-    } = useCustomProductActions(sliceName);
+    const dispatch = useProductDispatch();
+    const bindedLoadChars = useProductAsyncThunk(loadChars);
 
     useEffect(() => {
-        dispatch(loadChars());
-    }, [dispatch, loadChars]);
+        dispatch(bindedLoadChars());
+    }, [dispatch, bindedLoadChars]);
 
     const handleSet = () => {
         dispatch(setChar({
@@ -52,17 +34,29 @@ const CustomProduct: FC = () => {
         }));
     }
 
-    const version = useSelector(selectVersion);
-    const handleNextVersion = () => dispatch(nextVersion());
 
-    const charsVersion = useSelector(selectCharsVersion);
-    const handleNextCharsVersion = () => dispatch(nextCharsVersion());
+    const versionDispatch = useProductDispatch(VERSION_CASE);
+    const version = useProductSelector(selectVersion);
+    const bindedLoadVersion = useProductAsyncThunk(loadVersion, VERSION_CASE);
+
+    const handleNextVersion = () => versionDispatch(nextVersion());
+    const handleLoadVersion = () => versionDispatch(bindedLoadVersion());
+
+
+    const charsVersionDispatch = useProductDispatch(CHARS_VERSION_CASE);
+    const charsVersion = useProductSelector(selectCharsVersion);
+    const bindedLoadCharsVersion = useProductAsyncThunk(loadVersion, CHARS_VERSION_CASE);
+
+    const handleNextCharsVersion = () => charsVersionDispatch(nextVersion());
+    const handleLoadCharsVersion = () => versionDispatch(bindedLoadCharsVersion());
 
     return (
         <div>
+            <h3>Custom Product</h3>
             <div>Name: {name}</div>
             <div>Version: {version}</div>
             <button type="button" onClick={handleNextVersion}>Next Version</button>
+            <button type="button" onClick={handleLoadVersion}>Load Vesion</button>
             {loading ? (
                 <div>Loading...</div>
             ) : (
@@ -77,6 +71,7 @@ const CustomProduct: FC = () => {
                     <div>
                         <div>Chars Version: {charsVersion}</div>
                         <button type="button" onClick={handleNextCharsVersion}>Next Chars Version</button>
+                        <button type="button" onClick={handleLoadCharsVersion}>Load Chars Version</button>
                     </div>
                     <div>
                         <label>

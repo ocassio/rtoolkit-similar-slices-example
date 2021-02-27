@@ -1,56 +1,38 @@
-import { createProductSlice, VanillaProductReducer } from "./abstract-product.slice";
-import { CUSTOM_PRODUCT_TYPE } from "./custom-product.slice";
-import { GENERIC_PRODUCT_TYPE } from "./generic-product.slice";
+import { AnyAction, Reducer } from "@reduxjs/toolkit";
+import { productReducer, StandaloneProductState } from "./abstract-product.slice";
 
-export type ProductSlice = ReturnType<typeof createProductSlice>;
-export enum ProductSliceName {
+export type ProductSliceName = string;
+export enum ProductSliceNames {
     PRODUCT = "product",
     POPUP_PRODUCT = "popupProduct",
-    ONE_MORE_PRODUCT = "oneMoreProduct"
+    ONE_MORE_PRODUCT = "oneMoreProduct",
+    BUNDLE = "bundle"
 }
 
-export type ProductType = typeof GENERIC_PRODUCT_TYPE | typeof CUSTOM_PRODUCT_TYPE;
-
-type ProductSlices = Record<ProductSliceName, ProductSlice>;
-
-let slices: ProductSlices | null = null;
-const createSlices = (): ProductSlices => ({
-    product: createProductSlice(ProductSliceName.PRODUCT, {
-        type: GENERIC_PRODUCT_TYPE,
-        id: "1",
-        name: "Product 1",
-        count: 1,
-        version: 0
-    }),
-    popupProduct: createProductSlice(ProductSliceName.POPUP_PRODUCT, {
-        type: GENERIC_PRODUCT_TYPE,
-        id: "2",
-        name: "Product 2",
-        count: -12,
-        version: 12
-    }),
-    oneMoreProduct: createProductSlice(ProductSliceName.ONE_MORE_PRODUCT, {
-        type: CUSTOM_PRODUCT_TYPE,
-        id: "3",
-        name: "Product 3",
-        version: 1,
-        chars: {
-            values: {},
-            version: 7
-        },
-        loading: false
-    })
-});
-
-export const productSlice = (name: ProductSliceName): ProductSlice => {
-    if (!slices) {
-        slices = createSlices();
+export const createProductReducer = (sliceName: ProductSliceNames): Reducer<StandaloneProductState, AnyAction> => {
+    return (state = null, action) => {
+        if (action.meta?.slice === sliceName || action.meta?.arg?.meta?.slice === sliceName) {
+            return productReducer(state, action);
+        }
+        return state;
     }
+}
 
-    return slices[name];
-};
+export interface ProductFeatureReducerParams<State> {
+    caseName: string,
+    initialState: State,
+    reducer: Reducer<State, AnyAction>
+}
 
-export const productReducer = (name: ProductSliceName): VanillaProductReducer => productSlice(name).reducer;
-
-export const useProductActions = (name: ProductSliceName) => productSlice(name).actions;
-export const useProductSelectors = (name: ProductSliceName) => productSlice(name).selectors;
+export const createProductFeatureReducer = <State> ({
+    caseName,
+    initialState,
+    reducer
+}: ProductFeatureReducerParams<State>): Reducer<State, AnyAction> => {
+    return (state = initialState, action) => {
+        if (action.meta?.featureCase === caseName || action.meta?.arg?.meta?.featureCase === caseName) {
+            return reducer(state, action);
+        }
+        return state;
+    }
+}

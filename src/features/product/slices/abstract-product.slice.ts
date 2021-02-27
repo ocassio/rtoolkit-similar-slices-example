@@ -1,85 +1,51 @@
-import { createCustomProductSlice, CustomProductState, CUSTOM_PRODUCT_TYPE } from "./custom-product.slice";
-import { createGenericProductSlice, GenericProductState, GENERIC_PRODUCT_TYPE } from "./generic-product.slice";
-import { ActionCreatorWithOptionalPayload, AnyAction, createAction, createReducer } from "@reduxjs/toolkit";
-import { RootSelector, RootState } from "../../../app/store";
-import { ProductSliceName } from "./product.slices";
+import { customProductReducer, CustomProductState, CUSTOM_PRODUCT_TYPE } from "./custom-product.slice";
+import { genericProductReducer, GenericProductState, GENERIC_PRODUCT_TYPE } from "./generic-product.slice";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ProductMeta } from "./product.hooks";
 
 export interface AbstractProductState {
     id: string;
     name: string;
+    type: string;
 }
 
-export type ProductState = GenericProductState | CustomProductState | null | undefined;
+export type ProductState = GenericProductState | CustomProductState;
+export type StandaloneProductState = ProductState | null | undefined;
 
-export type VanillaProductReducer<T = ProductState> = (state: T, action: AnyAction) => ProductState;
-export type ProductReducer<T = ProductState> = (state: T, action: AnyAction) => ProductState | void;
+const initialState: StandaloneProductState = null;
 
-export interface AbstractProductSliceOptions {
-    actions: {
-        setProduct: ActionCreatorWithOptionalPayload<ProductState>;
-    };
-    selectors: {
-        selectProduct: RootSelector<ProductState>;
-        selectName: RootSelector<string | undefined>;
-    }
-}
-
-export const createProductSlice = (sliceName: ProductSliceName, initialState: ProductState = null) => {
-
-    // Actions
-
-    const setProduct = createAction<ProductState>(sliceName + "/set");
-
-    // Selectors
-
-    const selectProduct = (state: RootState) => state[sliceName];
-    const selectName = (state: RootState) => state[sliceName]?.name;
-
-    // Children
-
-    const options: AbstractProductSliceOptions = {
-        actions: {
-            setProduct
-        },
-        selectors: {
-            selectProduct,
-            selectName
+const slice = createSlice({
+    name: "product",
+    initialState: initialState as StandaloneProductState,
+    reducers: {
+        setProduct: {
+            reducer(_state, action: PayloadAction<StandaloneProductState>) {
+                return action.payload;
+            },
+            prepare(product: StandaloneProductState, meta?: ProductMeta) {
+                return {
+                    payload: product,
+                    meta
+                }
+            }
         }
-    }
-
-    const genericProductSlice = createGenericProductSlice(sliceName, options);
-    const customProductSlice = createCustomProductSlice(sliceName);
-
-    
-    // Reducer
-
-    const reducer = createReducer(initialState, builder => {
-       
-        builder.addCase(setProduct, (_state, action) => {
-            return action.payload;
-        });
-
+    },
+    extraReducers: builder => {
         builder.addDefaultCase((state, action) => {
             switch (state?.type) {
                 case GENERIC_PRODUCT_TYPE:
-                    return genericProductSlice.reducer(state, action);
+                    return genericProductReducer(state, action);
                 case CUSTOM_PRODUCT_TYPE:
-                    return customProductSlice.reducer(state, action);
+                    return customProductReducer(state, action);
             }
         });
-    });
+    }
+});
 
-    return {
-        reducer,
-        actions: {
-            generic: genericProductSlice.actions,
-            custom: customProductSlice.actions,
-            ...options.actions
-        },
-        selectors: {
-            generic: genericProductSlice.selectors,
-            custom: customProductSlice.selectors,
-            ...options.selectors
-        }
-    };
-};
+export const { setProduct } = slice.actions;
+
+export const productReducer = slice.reducer;
+
+export const selectProduct = (state: StandaloneProductState) => state;
+export const selectName = (state: StandaloneProductState) => state?.name;
+export const selectType = (state: StandaloneProductState) => state?.type;

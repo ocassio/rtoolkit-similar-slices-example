@@ -1,6 +1,4 @@
-import { createAsyncThunk, createSelector, createSlice, Selector } from "@reduxjs/toolkit";
-import { RootSelector, RootState } from "../../../../app/store";
-import { ProductState, StandaloneProductState } from "../abstract-product.slice";
+import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
 
 export type VersionState = {
     value: number;
@@ -41,16 +39,3 @@ export const selectDoubledVersionValue = createSelector(
     [selectVersionValue],
     (value) => value * 2
 );
-
-// function bindFeatureSelectors<State extends StandaloneProductState>(baseSelector: RootSelector<State>, selectors: Record<string, (state: State) => any>): Record<string, (state: State) => any> {
-//     return Object.keys(selectors).reduce<Record<string, (state: State) => any>>((result, key) => {
-//         result[key] = (state: RootState) => {
-//             const baseState = baseSelector(state);
-//             if (!baseState) {
-//                 return null;
-//             }
-//             return selectors[key](baseState);
-//         }
-//         return result;
-//     }, {});
-// }

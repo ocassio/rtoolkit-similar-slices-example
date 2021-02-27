@@ -13,7 +13,7 @@ const GenericProduct: FC = () => {
     const version = useProductSelector(selectVersion);
 
     const dispatch = useProductDispatch();
-    const bindedLoadProduct = useProductThunk(loadProduct)
+    const bindedLoadProduct = useProductThunk(loadProduct);
 
     const handleIncrease = () => dispatch(increase(2));
     const handleLoad = () => dispatch(bindedLoadProduct());

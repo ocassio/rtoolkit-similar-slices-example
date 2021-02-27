@@ -1,6 +1,7 @@
 import { customProductReducer, CustomProductState, CUSTOM_PRODUCT_TYPE } from "./custom-product.slice";
 import { genericProductReducer, GenericProductState, GENERIC_PRODUCT_TYPE } from "./generic-product.slice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ProductMeta } from "./product.hooks";
 
 export interface AbstractProductState {
     id: string;
@@ -17,8 +18,16 @@ const slice = createSlice({
     name: "product",
     initialState: initialState as StandaloneProductState,
     reducers: {
-        setProduct(_state, action: PayloadAction<StandaloneProductState>) {
-            return action.payload;
+        setProduct: {
+            reducer(_state, action: PayloadAction<StandaloneProductState>) {
+                return action.payload;
+            },
+            prepare(product: StandaloneProductState, meta?: ProductMeta) {
+                return {
+                    payload: product,
+                    meta
+                }
+            }
         }
     },
     extraReducers: builder => {

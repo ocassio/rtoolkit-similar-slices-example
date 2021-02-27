@@ -15,6 +15,11 @@ export interface CustomProductState extends AbstractProductState {
 
 const initialState: CustomProductState = null!!;
 
+// Product async thunks have one restriction:
+// If they are accepting an argument, it should be an object without meta field,
+// so the meta data could be attached without hurting an original value.
+// Example:
+// Instead of `(id: string) => SomeProduct` you should use `({ id: string }) => SomeProduct`.
 export const loadChars = createAsyncThunk(
     "product/custom/loadChars",
     () => new Promise<Record<string, string>>(resolve => {
@@ -23,7 +28,7 @@ export const loadChars = createAsyncThunk(
                 "Server Char 1": "Value 1",
                 "Server Char 2": "Value 2"
             }),
-            1000
+            2000
         )
     })
 );

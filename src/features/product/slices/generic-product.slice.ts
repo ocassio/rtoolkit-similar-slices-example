@@ -2,6 +2,7 @@ import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../../../app/store";
 import { AbstractProductState, setProduct, StandaloneProductState } from "./abstract-product.slice";
 import { VersionedState } from "./features/version.feature.slice";
+import { WithProductMeta } from "./product.hooks";
 
 export const GENERIC_PRODUCT_TYPE = "generic";
 
@@ -12,7 +13,8 @@ export interface GenericProductState extends AbstractProductState, VersionedStat
 
 const initialState: GenericProductState = null!!;
 
-export const loadProduct = (): AppThunk => dispatch => {
+// If you are writing custom thunks, you should handle passing meta data to dispatched actions manually.
+export const loadProduct = (arg?: WithProductMeta): AppThunk => dispatch => {
     setTimeout(
         () => {
             const product: GenericProductState = {
@@ -22,7 +24,7 @@ export const loadProduct = (): AppThunk => dispatch => {
                 count: 12,
                 version: 0
             };
-            dispatch(setProduct(product));
+            dispatch(setProduct(product, arg?.meta));
         },
         3000
     )

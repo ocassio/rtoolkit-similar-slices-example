@@ -1,7 +1,7 @@
 import { AnyAction, AsyncThunk, EntityId } from "@reduxjs/toolkit";
 import { Dispatch, useCallback, useContext, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../app/store";
+import { RootState, AppThunk } from "../../../app/store";
 import { BundleProductContext } from "../../bundle/bundle-product.context";
 import { selectBundleProductById } from "../../bundle/slices/bundle.slice";
 import { ProductContext } from "../product.context";
@@ -23,7 +23,7 @@ export const useProductDispatch = (): Dispatch<any> => {
     return useCallback((action: AnyAction) => {
         action.meta = Object.assign(action.meta || {}, {
             slice,
-            bunldeProductId: bundleProductId
+            bundleProductId: bundleProductId
         });
         dispatch(action);
     }, [dispatch, slice, bundleProductId])
@@ -41,14 +41,16 @@ export const useProductSelector = <T> (selector: (state: StandaloneProductState)
     });
 }
 
-interface WithProductMeta {
-    meta: {
-        slice: ProductSliceNames;
-        bundleProductId?: EntityId;
-    }
+export interface ProductMeta {
+    slice: ProductSliceNames;
+    bundleProductId?: EntityId;
 }
 
-export const useProductThunk = <Returned, ThunkArg, ThunkApiConfig> (
+export type WithProductMeta<T extends {} = {}> = T & {
+    meta: ProductMeta;
+}
+
+export const useProductAsyncThunk = <Returned, ThunkArg, ThunkApiConfig> (
     thunk: AsyncThunk<Returned, ThunkArg, ThunkApiConfig>
 ): AsyncThunk<Returned, ThunkArg, ThunkApiConfig> => {
     const slice = useContext(ProductContext);
@@ -71,4 +73,23 @@ export const useProductThunk = <Returned, ThunkArg, ThunkApiConfig> (
     
         return actionCreator;
     }, [thunk, slice, bundleProductId]);
+}
+
+export const useProductThunk = <ThunkArg> (actionCreator: (arg?: ThunkArg) => AppThunk): (arg?: ThunkArg) => AppThunk => {
+    const slice = useContext(ProductContext);
+    const bundleProductId = useContext(BundleProductContext);
+
+    return useMemo(() => {
+        return ((arg?: ThunkArg) => {
+            const meta: WithProductMeta = {
+                meta: {
+                    slice,
+                    bundleProductId
+                }
+            };
+            const argWithMeta: ThunkArg & WithProductMeta = Object.assign({}, arg, meta);
+    
+            return actionCreator(argWithMeta);
+        })
+    }, [actionCreator, slice, bundleProductId]);
 }

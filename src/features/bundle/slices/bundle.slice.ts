@@ -43,7 +43,7 @@ const slice = createSlice({
         builder.addMatcher(
             action => action.type.startsWith('product/'),
             (state, action) => {
-                const id: EntityId = action.meta?.bunldeProductId ?? action.meta?.arg?.meta?.bundleProductId;
+                const id: EntityId = action.meta?.bundleProductId ?? action.meta?.arg?.meta?.bundleProductId;
                 if (!id) {
                     return;
                 }

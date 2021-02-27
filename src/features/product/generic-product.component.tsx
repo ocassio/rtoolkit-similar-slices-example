@@ -2,7 +2,7 @@ import React from "react";
 import { FC } from "react";
 import { selectName } from "./slices/abstract-product.slice";
 import { increase, loadProduct, selectCount, selectCountX2 } from "./slices/generic-product.slice";
-import { useProductDispatch, useProductSelector } from "./slices/product.hooks";
+import { useProductDispatch, useProductSelector, useProductThunk } from "./slices/product.hooks";
 
 const GenericProduct: FC = () => {
 
@@ -12,9 +12,10 @@ const GenericProduct: FC = () => {
     // const version = useSelector(selectVersion);
 
     const dispatch = useProductDispatch();
+    const bindedLoadProduct = useProductThunk(loadProduct)
 
     const handleIncrease = () => dispatch(increase(2));
-    const handleLoad = () => dispatch(loadProduct());
+    const handleLoad = () => dispatch(bindedLoadProduct());
     // const handleNextVersion = () => dispatch(nextVersion());
 
     return (

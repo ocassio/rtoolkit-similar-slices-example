@@ -2,7 +2,7 @@ import React, { ChangeEventHandler, useEffect, useState } from "react";
 import { FC } from "react";
 import { selectName } from "./slices/abstract-product.slice";
 import { loadChars, selectChars, selectLoading, setChar } from "./slices/custom-product.slice";
-import { useProductDispatch, useProductSelector } from "./slices/product.hooks";
+import { useProductDispatch, useProductSelector, useProductThunk } from "./slices/product.hooks";
 
 const CustomProduct: FC = () => {    
     const name = useProductSelector(selectName);
@@ -20,10 +20,11 @@ const CustomProduct: FC = () => {
     }
 
     const dispatch = useProductDispatch();
+    const bindedLoadChars = useProductThunk(loadChars);
 
     useEffect(() => {
-        dispatch(loadChars());
-    }, [dispatch]);
+        dispatch(bindedLoadChars());
+    }, [dispatch, bindedLoadChars]);
 
     const handleSet = () => {
         dispatch(setChar({

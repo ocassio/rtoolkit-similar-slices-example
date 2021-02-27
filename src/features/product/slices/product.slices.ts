@@ -11,7 +11,7 @@ export enum ProductSliceNames {
 
 export const createProductReducer = (sliceName: ProductSliceNames): Reducer<StandaloneProductState, AnyAction> => {
     return (state = null, action) => {
-        if (action.meta?.slice === sliceName) {
+        if (action.meta?.slice === sliceName || action.meta?.arg?.meta?.slice === sliceName) {
             return productReducer(state, action);
         }
         return state;

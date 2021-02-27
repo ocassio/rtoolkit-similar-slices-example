@@ -37,6 +37,12 @@ export const store = configureStore({
       count: 1,
       version: {
         value: 0
+      },
+      services: {
+        services: {
+          ids: [],
+          entities: {}
+        }
       }
     },
     popupProduct: {
@@ -46,6 +52,12 @@ export const store = configureStore({
       count: 5,
       version: {
         value: 0
+      },
+      services: {
+        services: {
+          ids: [],
+          entities: {}
+        }
       }
     },
     oneMoreProduct: {

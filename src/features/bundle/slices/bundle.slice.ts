@@ -37,7 +37,13 @@ const slice = createSlice({
                 count: 0,
                 version: {
                     value: 0
-                }
+                },
+                services: {
+                    services: {
+                      ids: [],
+                      entities: {}
+                    }
+                  }
             })
         }
     },

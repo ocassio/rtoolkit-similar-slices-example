@@ -4,6 +4,7 @@ import { selectName } from "./slices/abstract-product.slice";
 import { nextVersion } from "./slices/features/version.feature.slice";
 import { increase, loadProduct, selectCount, selectCountX2, selectDoubledVersion, selectVersion } from "./slices/generic-product.slice";
 import { useProductDispatch, useProductSelector, useProductThunk } from "./slices/product.hooks";
+import ProductServices from "./services/product-services.component";
 
 const GenericProduct: FC = () => {
 
@@ -33,6 +34,7 @@ const GenericProduct: FC = () => {
                 <button type="button" onClick={handleLoad}>Load</button>
                 <button type="button" onClick={handleNextVersion}>Next Version</button>
             </div>
+            <ProductServices />
         </div>
     );
 }

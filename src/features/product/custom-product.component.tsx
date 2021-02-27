@@ -1,7 +1,7 @@
 import React, { ChangeEventHandler, useEffect, useState } from "react";
 import { FC } from "react";
 import { selectName } from "./slices/abstract-product.slice";
-import { loadChars, selectChars, selectCharsVersion, selectLoading, selectVersion, setChar } from "./slices/custom-product.slice";
+import { CHARS_VERSION_CASE, loadChars, selectChars, selectCharsVersion, selectLoading, selectVersion, setChar, VERSION_CASE } from "./slices/custom-product.slice";
 import { loadVersion, nextVersion } from "./slices/features/version.feature.slice";
 import { useProductDispatch, useProductSelector, useProductAsyncThunk } from "./slices/product.hooks";
 
@@ -34,20 +34,25 @@ const CustomProduct: FC = () => {
         }));
     }
 
-    const versionDispatch = useProductDispatch("version");
+
+    const versionDispatch = useProductDispatch(VERSION_CASE);
     const version = useProductSelector(selectVersion);
-    const bindedLoadVersion = useProductAsyncThunk(loadVersion, "version");
+    const bindedLoadVersion = useProductAsyncThunk(loadVersion, VERSION_CASE);
+
     const handleNextVersion = () => versionDispatch(nextVersion());
     const handleLoadVersion = () => versionDispatch(bindedLoadVersion());
 
-    const charsVersionDispatch = useProductDispatch("charsVersion");
+
+    const charsVersionDispatch = useProductDispatch(CHARS_VERSION_CASE);
     const charsVersion = useProductSelector(selectCharsVersion);
-    const bindedLoadCharsVersion = useProductAsyncThunk(loadVersion, "charsVersion");
+    const bindedLoadCharsVersion = useProductAsyncThunk(loadVersion, CHARS_VERSION_CASE);
+
     const handleNextCharsVersion = () => charsVersionDispatch(nextVersion());
     const handleLoadCharsVersion = () => versionDispatch(bindedLoadCharsVersion());
 
     return (
         <div>
+            <h3>Custom Product</h3>
             <div>Name: {name}</div>
             <div>Version: {version}</div>
             <button type="button" onClick={handleNextVersion}>Next Version</button>

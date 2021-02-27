@@ -21,6 +21,7 @@ const GenericProduct: FC = () => {
 
     return (
         <div>
+            <h3>Generic Product</h3>
             <div>Name: {name}</div>
             <div>Count: {count}</div>
             <div>Count x2: {countX2}</div>

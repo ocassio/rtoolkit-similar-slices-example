@@ -35,16 +35,18 @@ export const loadChars = createAsyncThunk(
     })
 );
 
+export const VERSION_CASE = "version";
 const versionReducer = createProductFeatureReducer({
-    caseName: "version",
+    caseName: VERSION_CASE,
     reducer: versionFeatureReducer,
     initialState: {
         value: 0
     }
 });
 
+export const CHARS_VERSION_CASE = "charsVersion";
 const charsVersionReducer = createProductFeatureReducer({
-    caseName: "charsVersion",
+    caseName: CHARS_VERSION_CASE,
     reducer: versionFeatureReducer,
     initialState: {
         value: 0

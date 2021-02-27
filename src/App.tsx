@@ -9,12 +9,15 @@ function App() {
   return (
     <div>
       <h1>Products</h1>
+      <h2>Product</h2>
       <ProductContext.Provider value={ProductSliceNames.PRODUCT}>
         <GenericProduct />
       </ProductContext.Provider>
+      <h2>Popup Product</h2>
       <ProductContext.Provider value={ProductSliceNames.POPUP_PRODUCT}>
         <GenericProduct />
       </ProductContext.Provider>
+      <h2>One More Product</h2>
       <ProductContext.Provider value={ProductSliceNames.ONE_MORE_PRODUCT}>
         <CustomProduct />
       </ProductContext.Provider>

@@ -1,11 +1,11 @@
 import { AnyAction, AsyncThunk, EntityId } from "@reduxjs/toolkit";
 import { Dispatch, useCallback, useContext, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState, AppThunk } from "../../../app/store";
+import { RootState, AppThunk, RootSelector } from "../../../app/store";
 import { BundleProductContext } from "../../bundle/bundle-product.context";
 import { selectBundleProductById } from "../../bundle/slices/bundle.slice";
 import { ProductContext } from "../product.context";
-import { StandaloneProductState } from "./abstract-product.slice";
+import {StandaloneProductState } from "./abstract-product.slice";
 import { ProductSliceNames } from "./product.slices";
 
 const PRODUCT_SLICE_SELECTORS = {
@@ -36,21 +36,29 @@ export const useProductSelector = <T> (selector: (state: StandaloneProductState)
     const productId = useContext(BundleProductContext);
 
     return useSelector((state: RootState) => {
-        const product = sliceName === ProductSliceNames.BUNDLE
-            ? PRODUCT_SLICE_SELECTORS[ProductSliceNames.BUNDLE](state, productId)
-            : PRODUCT_SLICE_SELECTORS[sliceName](state);
+        const productSelector = getSelector(sliceName, productId);
+        const product = productSelector(state);
         return selector(product);
     });
 }
 
-export interface ProductMeta {
+export interface ProductMeta<State = any> {
     slice: ProductSliceNames;
     bundleProductId?: EntityId;
     featureCase?: string;
+    selector?: RootSelector<State>;
 }
 
-export type WithProductMeta<T extends {} = {}> = T & {
-    meta: ProductMeta;
+export type WithProductMeta<T extends {} = {}, State = any> = T & {
+    meta: ProductMeta<State>;
+}
+
+function getSelector(sliceName: ProductSliceNames, bundleProductId?: EntityId): RootSelector<StandaloneProductState> {
+    return state => {
+        return sliceName === ProductSliceNames.BUNDLE
+            ? PRODUCT_SLICE_SELECTORS[ProductSliceNames.BUNDLE](state, bundleProductId!!)
+            : PRODUCT_SLICE_SELECTORS[sliceName](state);
+    }
 }
 
 export const useProductAsyncThunk = <Returned, ThunkArg, ThunkApiConfig> (
@@ -66,7 +74,8 @@ export const useProductAsyncThunk = <Returned, ThunkArg, ThunkApiConfig> (
                 meta: {
                     slice,
                     bundleProductId,
-                    featureCase
+                    featureCase,
+                    selector: getSelector(slice, bundleProductId)
                 }
             };
             const argWithMeta: ThunkArg & WithProductMeta = Object.assign({}, arg, meta);
@@ -93,7 +102,8 @@ export const useProductThunk = <ThunkArg> (
                 meta: {
                     slice,
                     bundleProductId,
-                    featureCase
+                    featureCase,
+                    selector: getSelector(slice, bundleProductId)
                 }
             };
             const argWithMeta: ThunkArg & WithProductMeta = Object.assign({}, arg, meta);

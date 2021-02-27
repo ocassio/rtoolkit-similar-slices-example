@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from "../../../app/store";
 import { AbstractProductState, StandaloneProductState } from "./abstract-product.slice";
 import { selectVersionValue, versionFeatureReducer, VersionState } from "./features/version.feature.slice";
+import { WithProductMeta } from "./product.hooks";
 import { createProductFeatureReducer } from "./product.slices";
 
 export const CUSTOM_PRODUCT_TYPE = "custom";
@@ -24,7 +26,16 @@ const initialState: CustomProductState = null!!;
 // Instead of `(id: string) => SomeProduct` you should use `({ id: string }) => SomeProduct`.
 export const loadChars = createAsyncThunk(
     "product/custom/loadChars",
-    () => new Promise<Record<string, string>>(resolve => {
+    (arg: WithProductMeta<{}, CustomProductState> | undefined, thunkApi) => new Promise<Record<string, string>>(resolve => {
+        
+        // --- Accessing state from thunk example
+        const selector = arg?.meta?.selector;
+        const state = thunkApi.getState() as RootState;
+        const product = selector && selector(state);
+
+        console.log(product);
+        // -------
+        
         setTimeout(
             () => resolve({
                 "Server Char 1": "Value 1",

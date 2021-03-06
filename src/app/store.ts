@@ -1,7 +1,7 @@
 import { configureStore, ThunkAction, Action, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { bunldeReducer } from '../features/bundle/slices/bundle.slice';
-import { CUSTOM_PRODUCT_TYPE } from '../features/product/slices/custom-product.slice';
-import { GENERIC_PRODUCT_TYPE } from '../features/product/slices/generic-product.slice';
+import { CUSTOM_PRODUCT_TYPE } from '../features/product/slices/custom/custom-product.slice';
+import { GENERIC_PRODUCT_TYPE } from '../features/product/slices/generic/generic-product.slice';
 import { createProductReducer, ProductSliceNames } from '../features/product/slices/product.slices';
 
 export const store = configureStore({

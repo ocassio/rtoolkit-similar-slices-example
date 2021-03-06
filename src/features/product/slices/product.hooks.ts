@@ -6,7 +6,7 @@ import { BundleProductContext } from "../../bundle/bundle-product.context";
 import { selectBundleProductById } from "../../bundle/slices/bundle.slice";
 import { ProductFeatureContext } from "../product-feature.context";
 import { ProductContext } from "../product.context";
-import { productCaseSelectors } from "./features/product-feature.cases";
+import { productCaseSelectorsRegistry } from "./features/product-feature.slices";
 import { ProductSliceNames } from "./product.slices";
 
 const PRODUCT_SLICE_SELECTORS = {
@@ -29,7 +29,7 @@ function getSelector(
             return productState;
         }
 
-        const caseSelector = productCaseSelectors[featureCase];
+        const caseSelector = productCaseSelectorsRegistry[featureCase];
         if (!caseSelector) {
             throw new Error(`No product feature selector has been found for '${featureCase}'`);
         }

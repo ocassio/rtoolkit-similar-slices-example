@@ -1,8 +1,8 @@
 import { createEntityAdapter, createSlice, EntityId, EntityState } from "@reduxjs/toolkit";
 import { RootState } from "../../../app/store";
 import { v4 as uuid } from "uuid";
-import { StandaloneProductState } from "../../product/slices/abstract-product.slice";
-import { GENERIC_PRODUCT_TYPE } from "../../product/slices/generic-product.slice";
+import { StandaloneProductState } from "../../product/slices/abstract/abstract-product.slice";
+import { GENERIC_PRODUCT_TYPE } from "../../product/slices/generic/generic-product.slice";
 import { createProductReducer, ProductSliceNames } from "../../product/slices/product.slices";
 
 export interface BundleState {

@@ -1,7 +1,7 @@
-import { customProductReducer, CustomProductState, CUSTOM_PRODUCT_TYPE } from "./custom-product.slice";
-import { genericProductReducer, GenericProductState, GENERIC_PRODUCT_TYPE } from "./generic-product.slice";
+import { customProductReducer, CustomProductState, CUSTOM_PRODUCT_TYPE } from "../custom/custom-product.slice";
+import { genericProductReducer, GenericProductState, GENERIC_PRODUCT_TYPE } from "../generic/generic-product.slice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ProductMeta } from "./product.hooks";
+import { ProductMeta } from "../product.hooks";
 
 export interface AbstractProductState {
     id: string;

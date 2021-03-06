@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit";
-import { RootState } from "../../../../../app/store";
 import { WithProductMeta } from "../../product.hooks";
+import { getScopedState } from "../../product.slices";
 
 export type VersionState = {
     value: number;
@@ -15,10 +15,7 @@ export const loadVersion = createAsyncThunk(
     (arg: WithProductMeta<{}, VersionState> | undefined, thunkApi) => {
 
         // --- Accessing state from thunk example
-        const selector = arg?.meta?.selector;
-        const state = thunkApi.getState() as RootState;
-        const version = selector && selector(state);
-
+        const version = getScopedState(arg, thunkApi);
         console.log(version);
         // -------
 

@@ -1,5 +1,7 @@
 import { AnyAction, Reducer } from "@reduxjs/toolkit";
+import { RootState } from "../../../app/store";
 import { productReducer, StandaloneProductState } from "./abstract/abstract-product.slice";
+import { WithProductMeta } from "./product.hooks";
 
 export type ProductSliceName = string;
 export enum ProductSliceNames {
@@ -16,4 +18,15 @@ export const createProductReducer = (sliceName: ProductSliceNames): Reducer<Stan
         }
         return state;
     }
+}
+
+interface ThunkApi {
+    getState: () => unknown;
+}
+
+export function getScopedState<State>(arg: WithProductMeta<any, State> | undefined, thunkApi: ThunkApi) {
+    const selector = arg?.meta?.selector;
+    const state = thunkApi.getState() as RootState;
+
+    return selector && selector(state);
 }

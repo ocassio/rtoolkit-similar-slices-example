@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { RootState } from "../../../../app/store";
 import { WithProductMeta } from "../product.hooks";
+import { getScopedState } from "../product.slices";
 import { CustomProductState } from "./custom-product.slice";
 
 // Product async thunks have one restriction:
@@ -13,10 +13,7 @@ export const loadChars = createAsyncThunk(
     (arg: WithProductMeta<{}, CustomProductState> | undefined, thunkApi) => new Promise<Record<string, string>>(resolve => {
         
         // --- Accessing state from thunk example
-        const selector = arg?.meta?.selector;
-        const state = thunkApi.getState() as RootState;
-        const product = selector && selector(state);
-
+        const product = getScopedState(arg, thunkApi);
         console.log(product);
         // -------
         

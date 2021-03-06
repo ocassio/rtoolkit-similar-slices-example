@@ -1,4 +1,4 @@
-import { createEntityAdapter, createSlice, EntityId, EntityState, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createEntityAdapter, createSlice, EntityId, EntityState, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Service {
     id: EntityId;
@@ -11,6 +11,27 @@ export interface ServicesState {
 }
 
 const servicesAdapter = createEntityAdapter<Service>();
+
+export const loadServices = createAsyncThunk(
+    "product/feature/services/load",
+    () => new Promise<Service[]>(resolve => {
+        setTimeout(
+            () => resolve([
+                {
+                    id: "1",
+                    name: "Service 1",
+                    count: 2
+                },
+                {
+                    id: "2",
+                    name: "Service 2",
+                    count: 1
+                }
+            ]),
+            1000
+        )
+    })
+)
 
 const initialState: ServicesState = {
     services: servicesAdapter.getInitialState()
@@ -30,6 +51,11 @@ const slice = createSlice({
                 service.count += amount;
             }
         }
+    },
+    extraReducers(builder) {
+        builder.addCase(loadServices.fulfilled, (state, action) => {
+            servicesAdapter.setAll(state.services, action.payload);
+        });
     }
 });
 

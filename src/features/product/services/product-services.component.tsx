@@ -1,6 +1,6 @@
 import React, { FC, memo } from "react";
-import { addService, selectServiceIds } from "../slices/features/services/services.feature.slice";
-import { useProductDispatch, useProductSelector } from "../slices/product.hooks";
+import { addService, loadServices, selectServiceIds } from "../slices/features/services/services.feature.slice";
+import { useProductAsyncThunk, useProductDispatch, useProductSelector } from "../slices/product.hooks";
 import ProductService from "./product-service.component";
 import { v4 as uuid } from "uuid";
 
@@ -17,6 +17,9 @@ const ProductServices: FC = () => {
         }));
     };
 
+    const bindedLoadServices = useProductAsyncThunk(loadServices);
+    const handleLoad = () => dispatch(bindedLoadServices());
+
     return (
         <div>
             <h4>Services</h4>
@@ -24,6 +27,7 @@ const ProductServices: FC = () => {
                 <ProductService key={id} id={id} />
             ))}
             <button type="button" onClick={handleAddService}>Add Service</button>
+            <button type="button" onClick={handleLoad}>Load Services</button>
         </div>
     )
 }

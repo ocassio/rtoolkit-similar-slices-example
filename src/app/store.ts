@@ -1,4 +1,4 @@
-import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
+import { configureStore, ThunkAction, Action, getDefaultMiddleware } from '@reduxjs/toolkit';
 import { bunldeReducer } from '../features/bundle/slices/bundle.slice';
 import { CUSTOM_PRODUCT_TYPE } from '../features/product/slices/custom-product.slice';
 import { GENERIC_PRODUCT_TYPE } from '../features/product/slices/generic-product.slice';
@@ -25,7 +25,13 @@ export const store = configureStore({
                 value: 7
               }
             },
-            loading: false
+            loading: false,
+            services: {
+              services: {
+                ids: [],
+                entities: {}
+              }
+            }
           }
         }
       }
@@ -73,7 +79,13 @@ export const store = configureStore({
           value: 7
         }
       },
-      loading: false
+      loading: false,
+      services: {
+        services: {
+          ids: [],
+          entities: {}
+        }
+      }
     }
   },
   reducer: {
@@ -82,6 +94,14 @@ export const store = configureStore({
     oneMoreProduct: createProductReducer(ProductSliceNames.ONE_MORE_PRODUCT),
     bundle: bunldeReducer
   },
+  middleware: getDefaultMiddleware({
+    serializableCheck: {
+      ignoredActionPaths: [
+        "meta.selector",
+        "meta.arg.meta.selector"
+      ]
+    }
+  })
 });
 
 export type RootState = ReturnType<typeof store.getState>;

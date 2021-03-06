@@ -1,9 +1,11 @@
 import React, { ChangeEventHandler, useEffect, useState } from "react";
 import { FC } from "react";
+import { ProductFeatureContext } from "./product-feature.context";
 import { selectName } from "./slices/abstract-product.slice";
-import { CHARS_VERSION_CASE, loadChars, selectChars, selectCharsVersion, selectLoading, selectVersion, setChar, VERSION_CASE } from "./slices/custom-product.slice";
-import { loadVersion, nextVersion } from "./slices/features/version.feature.slice";
+import { CUSTOM_CHARS_VERSION_CASE, loadChars, selectChars, selectLoading, setChar, CUSTOM_VERSION_CASE, CUSTOM_SERVICES_CASE } from "./slices/custom-product.slice";
+import { loadVersion, nextVersion, selectVersionValue } from "./slices/features/version/version.feature.slice";
 import { useProductDispatch, useProductSelector, useProductAsyncThunk } from "./slices/product.hooks";
+import ProductServices from "./services/product-services.component";
 
 const CustomProduct: FC = () => {    
     const name = useProductSelector(selectName);
@@ -35,17 +37,17 @@ const CustomProduct: FC = () => {
     }
 
 
-    const versionDispatch = useProductDispatch(VERSION_CASE);
-    const version = useProductSelector(selectVersion);
-    const bindedLoadVersion = useProductAsyncThunk(loadVersion, VERSION_CASE);
+    const versionDispatch = useProductDispatch(CUSTOM_VERSION_CASE);
+    const version = useProductSelector(selectVersionValue, CUSTOM_VERSION_CASE);
+    const bindedLoadVersion = useProductAsyncThunk(loadVersion, CUSTOM_VERSION_CASE);
 
     const handleNextVersion = () => versionDispatch(nextVersion());
     const handleLoadVersion = () => versionDispatch(bindedLoadVersion());
 
 
-    const charsVersionDispatch = useProductDispatch(CHARS_VERSION_CASE);
-    const charsVersion = useProductSelector(selectCharsVersion);
-    const bindedLoadCharsVersion = useProductAsyncThunk(loadVersion, CHARS_VERSION_CASE);
+    const charsVersionDispatch = useProductDispatch(CUSTOM_CHARS_VERSION_CASE);
+    const charsVersion = useProductSelector(selectVersionValue, CUSTOM_CHARS_VERSION_CASE);
+    const bindedLoadCharsVersion = useProductAsyncThunk(loadVersion, CUSTOM_CHARS_VERSION_CASE);
 
     const handleNextCharsVersion = () => charsVersionDispatch(nextVersion());
     const handleLoadCharsVersion = () => versionDispatch(bindedLoadCharsVersion());
@@ -94,6 +96,9 @@ const CustomProduct: FC = () => {
                     </div>
                 </>
             )}
+            <ProductFeatureContext.Provider value={CUSTOM_SERVICES_CASE}>
+                <ProductServices />
+            </ProductFeatureContext.Provider>
         </div>
     );
 }

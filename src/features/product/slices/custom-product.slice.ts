@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../../app/store";
 import { AbstractProductState, StandaloneProductState } from "./abstract-product.slice";
-import { selectVersionValue, versionFeatureReducer, VersionState } from "./features/version.feature.slice";
+import { servicesFeatureReducer, ServicesState } from "./features/services/services.feature.slice";
+import { versionFeatureReducer, VersionState } from "./features/version/version.feature.slice";
 import { WithProductMeta } from "./product.hooks";
 import { createProductFeatureReducer } from "./product.slices";
 
@@ -15,13 +16,14 @@ export interface CustomProductState extends AbstractProductState {
         version: VersionState;
     }
     loading: boolean;
+    services: ServicesState;
 }
 
 const initialState: CustomProductState = null!!;
 
 // Product async thunks have one restriction:
 // If they are accepting an argument, it should be an object without meta field,
-// so the meta data could be attached without hurting an original value.
+// so the meta data could be attached without hurting the original value.
 // Example:
 // Instead of `(id: string) => SomeProduct` you should use `({ id: string }) => SomeProduct`.
 export const loadChars = createAsyncThunk(
@@ -46,18 +48,18 @@ export const loadChars = createAsyncThunk(
     })
 );
 
-export const VERSION_CASE = "version";
+export const CUSTOM_VERSION_CASE = "customVersion";
 const versionReducer = createProductFeatureReducer({
-    caseName: VERSION_CASE,
+    caseName: CUSTOM_VERSION_CASE,
     reducer: versionFeatureReducer,
     initialState: {
         value: 0
     }
 });
 
-export const CHARS_VERSION_CASE = "charsVersion";
+export const CUSTOM_CHARS_VERSION_CASE = "customCharsVersion";
 const charsVersionReducer = createProductFeatureReducer({
-    caseName: CHARS_VERSION_CASE,
+    caseName: CUSTOM_CHARS_VERSION_CASE,
     reducer: versionFeatureReducer,
     initialState: {
         value: 0
@@ -86,6 +88,7 @@ const slice = createSlice({
         builder.addDefaultCase((state, action) => {
             versionReducer(state.version, action);
             charsVersionReducer(state.chars.version, action);
+            servicesFeatureReducer(state.services, action);
         });
     }
 });
@@ -103,5 +106,10 @@ const customProductSelector = <T> (selector: (state: CustomProductState) => T, f
 
 export const selectChars = customProductSelector(state => state.chars.values, {});
 export const selectLoading = customProductSelector(state => state.loading, false);
-export const selectVersion = customProductSelector(state => selectVersionValue(state.version), 0);
-export const selectCharsVersion = customProductSelector(state => selectVersionValue(state.chars.version), 0);
+
+export const CUSTOM_SERVICES_CASE = "customServices";
+export const customProductFeatureCaseSelectors = {
+    [CUSTOM_VERSION_CASE]: customProductSelector(state => state.version, null),
+    [CUSTOM_CHARS_VERSION_CASE]: customProductSelector(state => state.chars.version, null),
+    [CUSTOM_SERVICES_CASE]: customProductSelector(state => state.services, null)
+}

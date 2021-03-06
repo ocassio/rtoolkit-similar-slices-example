@@ -1,7 +1,6 @@
 import { EntityId } from "@reduxjs/toolkit";
 import React, { FC, memo } from "react";
-import { increaseCount } from "../slices/features/services.feature.slice";
-import { selectServiceById } from "../slices/generic-product.slice";
+import { increaseCount, selectServiceById } from "../slices/features/services/services.feature.slice";
 import { useProductDispatch, useProductSelector } from "../slices/product.hooks";
 
 interface ProductServiceProps {

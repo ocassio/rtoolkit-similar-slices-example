@@ -1,8 +1,8 @@
-import { createSelector, createSlice, EntityId, PayloadAction } from "@reduxjs/toolkit";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AppThunk } from "../../../app/store";
 import { AbstractProductState, setProduct, StandaloneProductState } from "./abstract-product.slice";
-import { selectById, selectIds, servicesFeatureReducer, ServicesState } from "./features/services.feature.slice";
-import { selectDoubledVersionValue, selectVersionValue, versionFeatureReducer, VersionState } from "./features/version.feature.slice";
+import { servicesFeatureReducer, ServicesState } from "./features/services/services.feature.slice";
+import { versionFeatureReducer, VersionState } from "./features/version/version.feature.slice";
 import { WithProductMeta } from "./product.hooks";
 
 export const GENERIC_PRODUCT_TYPE = "generic";
@@ -75,8 +75,10 @@ export const selectCountX2 = createSelector(
     count => count * 2
 );
 
-export const selectVersion = genericProductSelector(state => selectVersionValue(state.version), 0);
-export const selectDoubledVersion = genericProductSelector(state => selectDoubledVersionValue(state.version), 0);
+export const GENERIC_VERSION_CASE = "genericVersion";
+export const GENERIC_SERVICES_CASE = "genericServices";
 
-export const selectServiceIds = genericProductSelector(state => selectIds(state.services), []);
-export const selectServiceById = (id: EntityId) => genericProductSelector(state => selectById(state.services, id), null);
+export const genericProductFeatureCaseSelectors = {
+    [GENERIC_VERSION_CASE]: genericProductSelector(state => state.version, null),
+    [GENERIC_SERVICES_CASE]: genericProductSelector(state => state.services, null)
+}

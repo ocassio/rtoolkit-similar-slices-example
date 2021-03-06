@@ -4,8 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppThunk, RootSelector } from "../../../app/store";
 import { BundleProductContext } from "../../bundle/bundle-product.context";
 import { selectBundleProductById } from "../../bundle/slices/bundle.slice";
+import { ProductFeatureContext } from "../product-feature.context";
 import { ProductContext } from "../product.context";
-import {StandaloneProductState } from "./abstract-product.slice";
+import { productCaseSelectors } from "./features/product-feature.cases";
 import { ProductSliceNames } from "./product.slices";
 
 const PRODUCT_SLICE_SELECTORS = {
@@ -15,30 +16,60 @@ const PRODUCT_SLICE_SELECTORS = {
     bundle: selectBundleProductById
 }
 
+function getSelector(
+    sliceName: ProductSliceNames,
+    bundleProductId?: EntityId,
+    featureCase?: string
+): RootSelector<any> {
+    return state => {
+        const productState = sliceName === ProductSliceNames.BUNDLE
+            ? PRODUCT_SLICE_SELECTORS[ProductSliceNames.BUNDLE](state, bundleProductId!!)
+            : PRODUCT_SLICE_SELECTORS[sliceName](state);
+        if (!featureCase) {
+            return productState;
+        }
+
+        const caseSelector = productCaseSelectors[featureCase];
+        if (!caseSelector) {
+            throw new Error(`No product feature selector has been found for '${featureCase}'`);
+        }
+
+        return caseSelector(productState);
+    }
+}
+
+function useFeatureCase(featureCase?: string): string | undefined {
+    const contextValue = useContext(ProductFeatureContext);
+    return featureCase ?? contextValue;
+}
+
 export const useProductDispatch = (featureCase?: string): Dispatch<any> => {
     const dispatch = useDispatch();
     const slice = useContext(ProductContext);
     const bundleProductId = useContext(BundleProductContext);
+    const actualCase = useFeatureCase(featureCase);
     
     return useCallback((action: AnyAction) => {
         const meta: ProductMeta = {
             slice,
             bundleProductId,
-            featureCase
+            featureCase: actualCase
         }
         action.meta = Object.assign(action.meta || {}, meta);
         dispatch(action);
-    }, [dispatch, slice, bundleProductId, featureCase])
+    }, [dispatch, slice, bundleProductId, actualCase]);
 }
 
-export const useProductSelector = <T> (selector: (state: StandaloneProductState) => T): T => {
+export const useProductSelector = <T> (selector: (state: any) => T, featureCase?: string): T => {
     const sliceName = useContext(ProductContext);
     const productId = useContext(BundleProductContext);
+    const actualCase = useFeatureCase(featureCase);
 
     return useSelector((state: RootState) => {
-        const productSelector = getSelector(sliceName, productId);
-        const product = productSelector(state);
-        return selector(product);
+        const baseSelector = getSelector(sliceName, productId, actualCase);
+        const baseState = baseSelector(state);
+
+        return selector(baseState);
     });
 }
 
@@ -53,20 +84,13 @@ export type WithProductMeta<T extends {} = {}, State = any> = T & {
     meta: ProductMeta<State>;
 }
 
-function getSelector(sliceName: ProductSliceNames, bundleProductId?: EntityId): RootSelector<StandaloneProductState> {
-    return state => {
-        return sliceName === ProductSliceNames.BUNDLE
-            ? PRODUCT_SLICE_SELECTORS[ProductSliceNames.BUNDLE](state, bundleProductId!!)
-            : PRODUCT_SLICE_SELECTORS[sliceName](state);
-    }
-}
-
 export const useProductAsyncThunk = <Returned, ThunkArg, ThunkApiConfig> (
     thunk: AsyncThunk<Returned, ThunkArg, ThunkApiConfig>,
     featureCase?: string
 ): AsyncThunk<Returned, ThunkArg, ThunkApiConfig> => {
     const slice = useContext(ProductContext);
     const bundleProductId = useContext(BundleProductContext);
+    const actualCase = useFeatureCase(featureCase);
 
     return useMemo(() => {
         const actionCreator = ((arg: ThunkArg) => {
@@ -74,8 +98,8 @@ export const useProductAsyncThunk = <Returned, ThunkArg, ThunkApiConfig> (
                 meta: {
                     slice,
                     bundleProductId,
-                    featureCase,
-                    selector: getSelector(slice, bundleProductId)
+                    featureCase: actualCase,
+                    selector: getSelector(slice, bundleProductId, actualCase)
                 }
             };
             const argWithMeta: ThunkArg & WithProductMeta = Object.assign({}, arg, meta);
@@ -86,7 +110,7 @@ export const useProductAsyncThunk = <Returned, ThunkArg, ThunkApiConfig> (
         Object.assign(actionCreator, thunk);
     
         return actionCreator;
-    }, [thunk, slice, bundleProductId, featureCase]);
+    }, [thunk, slice, bundleProductId, actualCase]);
 }
 
 export const useProductThunk = <ThunkArg> (
@@ -95,6 +119,7 @@ export const useProductThunk = <ThunkArg> (
 ): (arg?: ThunkArg) => AppThunk => {
     const slice = useContext(ProductContext);
     const bundleProductId = useContext(BundleProductContext);
+    const actualCase = useFeatureCase(featureCase);
 
     return useMemo(() => {
         return ((arg?: ThunkArg) => {
@@ -102,13 +127,13 @@ export const useProductThunk = <ThunkArg> (
                 meta: {
                     slice,
                     bundleProductId,
-                    featureCase,
-                    selector: getSelector(slice, bundleProductId)
+                    featureCase: actualCase,
+                    selector: getSelector(slice, bundleProductId, actualCase)
                 }
             };
             const argWithMeta: ThunkArg & WithProductMeta = Object.assign({}, arg, meta);
     
             return actionCreator(argWithMeta);
         })
-    }, [actionCreator, slice, bundleProductId, featureCase]);
+    }, [actionCreator, slice, bundleProductId, actualCase]);
 }

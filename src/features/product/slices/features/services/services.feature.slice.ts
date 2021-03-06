@@ -37,4 +37,7 @@ export const { addService, increaseCount } = slice.actions;
 
 export const servicesFeatureReducer = slice.reducer;
 
-export const { selectIds, selectById } = servicesAdapter.getSelectors((state: ServicesState) => state.services);
+const { selectIds, selectById } = servicesAdapter.getSelectors((state: ServicesState) => state.services);
+
+export const selectServiceIds = selectIds;
+export const selectServiceById = (id: EntityId) => (state: ServicesState) => selectById(state, id);

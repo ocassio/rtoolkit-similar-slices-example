@@ -1,6 +1,5 @@
 import React, { FC, memo } from "react";
-import { addService } from "../slices/features/services.feature.slice";
-import { selectServiceIds } from "../slices/generic-product.slice";
+import { addService, selectServiceIds } from "../slices/features/services/services.feature.slice";
 import { useProductDispatch, useProductSelector } from "../slices/product.hooks";
 import ProductService from "./product-service.component";
 import { v4 as uuid } from "uuid";

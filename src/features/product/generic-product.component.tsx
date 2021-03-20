@@ -1,12 +1,11 @@
-import React from "react";
-import { FC } from "react";
+import React, { FC } from "react";
 import { selectName } from "./slices/abstract/abstract-product.slice";
-import { nextVersion, selectDoubledVersionValue, selectVersionValue } from "./slices/features/version/version.feature.slice";
+import { createSelectDoubledVersionValue, nextVersion, selectVersionValue } from "./slices/features/version/version.feature.slice";
 import { increase } from "./slices/generic/generic-product.slice";
-import { useProductDispatch, useProductSelector, useProductThunk } from "./slices/product.hooks";
+import { useMemoizedProductSelector, useProductDispatch, useProductSelector, useProductThunk } from "./slices/product.hooks";
 import ProductServices from "./services/product-services.component";
 import { ProductFeatureContext } from "./product-feature.context";
-import { selectCount, selectCountX2 } from "./slices/generic/generic-product.selectors";
+import { selectCount, createSelectCountX2 } from "./slices/generic/generic-product.selectors";
 import { genericVersionCase } from "./slices/generic/features/generic-product-version.feature.slice";
 import { loadProduct } from "./slices/generic/generic-product.thunks";
 import { genericServicesCase } from "./slices/generic/features/generic-product-services.feature.slice";
@@ -15,7 +14,7 @@ const GenericProduct: FC = () => {
 
     const name = useProductSelector(selectName);
     const count = useProductSelector(selectCount);
-    const countX2 = useProductSelector(selectCountX2);
+    const countX2 = useMemoizedProductSelector(createSelectCountX2);
     
 
     const dispatch = useProductDispatch();
@@ -26,7 +25,7 @@ const GenericProduct: FC = () => {
     
 
     const version = useProductSelector(selectVersionValue, genericVersionCase);
-    const doubledVersion = useProductSelector(selectDoubledVersionValue, genericVersionCase);
+    const doubledVersion = useMemoizedProductSelector(createSelectDoubledVersionValue, genericVersionCase);
 
     const versionDispatch = useProductDispatch(genericVersionCase);
     const handleNextVersion = () => versionDispatch(nextVersion());

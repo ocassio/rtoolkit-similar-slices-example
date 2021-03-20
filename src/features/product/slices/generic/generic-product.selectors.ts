@@ -11,7 +11,7 @@ export const genericProductSelector = <T> (selector: (state: GenericProductState
 
 export const selectCount = genericProductSelector(state => state.count, 0);
 
-export const selectCountX2 = createSelector(
+export const createSelectCountX2 = () => createSelector(
     selectCount,
     count => count * 2
 );

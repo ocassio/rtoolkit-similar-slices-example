@@ -73,6 +73,14 @@ export const useProductSelector = <T> (selector: (state: any) => T, featureCase?
     });
 }
 
+export const useMemoizedProductSelector = <T> (
+    selectorCreator: () => (state: any) => T,
+    featureCase?: string
+): T => {
+    const memoizedSelector = useMemo(() => selectorCreator(), [selectorCreator]);
+    return useProductSelector(memoizedSelector, featureCase);
+}
+
 export interface ProductMeta<State = any> {
     slice: ProductSliceNames;
     bundleProductId?: EntityId;

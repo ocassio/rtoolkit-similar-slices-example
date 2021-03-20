@@ -45,7 +45,10 @@ export const { nextVersion } = slice.actions;
 export const versionFeatureReducer = slice.reducer;
 
 export const selectVersionValue = (state: VersionState) => state.value;
-export const selectDoubledVersionValue = createSelector(
+export const createSelectDoubledVersionValue = () => createSelector(
     [selectVersionValue],
-    (value) => value * 2
+    (value) => {
+        console.log('Calculating version... Base version: ' + value);
+        return value * 2;
+    }
 );

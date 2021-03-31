@@ -4,11 +4,8 @@ import { customProductSelector } from "../custom-product.selectors";
 
 const versionFeatureSlice = createProductFeatureSlice({
     caseName: "custom/version",
-    initialState: {
-        value: 0
-    },
     reducer: versionFeatureReducer,
-    baseSelector: customProductSelector(state => state.version, null)
+    baseSelector: customProductSelector(state => state.version, undefined)
 });
 
 export const {

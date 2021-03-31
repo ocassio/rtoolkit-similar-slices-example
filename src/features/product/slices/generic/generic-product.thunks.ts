@@ -20,6 +20,10 @@ export const loadProduct = (arg?: WithProductMeta): AppThunk => dispatch => {
                         ids: [],
                         entities: {}
                     }
+                },
+                equipment: {
+                    ids: [],
+                    entities: {}
                 }
             };
             dispatch(setProduct(product, arg?.meta));

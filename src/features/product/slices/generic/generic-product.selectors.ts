@@ -1,6 +1,6 @@
-import { createSelector } from "@reduxjs/toolkit";
+import { createEntityAdapter, createSelector, EntityId } from "@reduxjs/toolkit";
 import { StandaloneProductState } from "../abstract/abstract-product.slice";
-import { GenericProductState, GENERIC_PRODUCT_TYPE } from "./generic-product.slice";
+import { Equipment, GenericProductState, GENERIC_PRODUCT_TYPE } from "./generic-product.slice";
 
 export const genericProductSelector = <T> (selector: (state: GenericProductState) => T, fallbackValue: T): (state: StandaloneProductState) => T => {
     return (state: StandaloneProductState) => {
@@ -15,3 +15,15 @@ export const createSelectCountX2 = () => createSelector(
     selectCount,
     count => count * 2
 );
+
+const equipmentAdapter = createEntityAdapter<Equipment>();
+
+export const {
+    selectIds: selectEquipmentIds,
+    selectById: selectEquipmentById
+} = equipmentAdapter.getSelectors(
+    genericProductSelector(state => state.equipment, null!!)
+);
+
+export const selectEquipmentName = (id: EntityId) =>
+    (state: StandaloneProductState) => selectEquipmentById(state, id)?.name;

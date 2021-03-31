@@ -42,9 +42,9 @@ const slice = createSlice({
         });
 
         builder.addDefaultCase((state, action) => {
-            customVersionReducer(state.version, action);
-            customCharsVersionReducer(state.chars.version, action);
-            customServicesReducer(state.services, action);
+            customVersionReducer(state, action);
+            customCharsVersionReducer(state, action);
+            customServicesReducer(state, action);
         });
     }
 });

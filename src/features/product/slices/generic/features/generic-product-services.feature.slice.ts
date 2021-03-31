@@ -4,14 +4,8 @@ import { genericProductSelector } from "../generic-product.selectors";
 
 const servicesFeatureSlice = createProductFeatureSlice({
     caseName: "generic/services",
-    initialState: {
-        services: {
-            ids: [],
-            entities: {}
-        }
-    },
     reducer: servicesFeatureReducer,
-    baseSelector: genericProductSelector(state => state.services, null)
+    baseSelector: genericProductSelector(state => state.services, undefined)
 });
 
 export const {

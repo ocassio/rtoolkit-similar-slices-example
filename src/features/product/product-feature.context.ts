@@ -1,3 +1,8 @@
 import { createContext } from "react";
 
-export const ProductFeatureContext = createContext<string | undefined>(undefined);
+export interface ProductFeatureProps {
+    case: string;
+    arg?: any;
+}
+
+export const ProductFeatureContext = createContext<ProductFeatureProps | undefined>(undefined);

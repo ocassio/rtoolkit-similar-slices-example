@@ -1,25 +1,23 @@
 import { AnyAction, Reducer } from "@reduxjs/toolkit";
 
-export const productCaseSelectorsRegistry: Record<string, (state: any) => any> = {};
+export const productCaseSelectorsRegistry: Record<string, (state: any, arg?: any) => any> = {};
 
-export interface ProductFeatureSliceParams<State> {
+export interface ProductFeatureSliceParams<ParentState, State, Arg = void> {
     caseName: string;
-    initialState: State;
     reducer: Reducer<State, AnyAction>;
-    baseSelector: (state: any) => State | undefined | null;
+    baseSelector: (state: ParentState, arg: Arg) => State | undefined;
 }
 
 export interface ProductFeatureSlice<State> {
     caseName: string;
-    reducer: Reducer<State, AnyAction>;
+    reducer: (state: State, action: AnyAction) => State | undefined;
 }
 
-export const createProductFeatureSlice = <State> ({
+export const createProductFeatureSlice = <ParentState, State, Arg = void> ({
     caseName,
-    initialState,
     reducer,
     baseSelector
-}: ProductFeatureSliceParams<State>): ProductFeatureSlice<State> => {
+}: ProductFeatureSliceParams<ParentState, State, Arg>): ProductFeatureSlice<ParentState> => {
     if (caseName in productCaseSelectorsRegistry) {
         throw new Error(`Feature slice for '${caseName}' is already present in the registry`);
     }
@@ -28,11 +26,14 @@ export const createProductFeatureSlice = <State> ({
 
     return {
         caseName,
-        reducer(state = initialState, action) {
-            if (action.meta?.featureCase === caseName || action.meta?.arg?.meta?.featureCase === caseName) {
-                return reducer(state, action);
+        reducer(state = null!!, action) {
+            const meta = action.meta || action.meta?.arg?.meta;
+            if (meta?.feature?.case !== caseName) {
+                return state;
             }
-            return state;
+            
+            const baseState = baseSelector(state, meta?.feature?.arg);
+            reducer(baseState, action);
         }
     }
 }

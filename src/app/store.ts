@@ -49,6 +49,31 @@ export const store = configureStore({
           ids: [],
           entities: {}
         }
+      },
+      equipment: {
+        ids: ["e1", "e2"],
+        entities: {
+          "e1": {
+            id: "e1",
+            name: "Equipment 1",
+            services: {
+              services: {
+                ids: [],
+                entities: {}
+              }
+            },
+          },
+          "e2": {
+            id: "e2",
+            name: "Equipment 2",
+            services: {
+              services: {
+                ids: [],
+                entities: {}
+              }
+            },
+          }
+        }
       }
     },
     popupProduct: {
@@ -63,6 +88,31 @@ export const store = configureStore({
         services: {
           ids: [],
           entities: {}
+        }
+      },
+      equipment: {
+        ids: ["e1", "e2"],
+        entities: {
+          "e1": {
+            id: "e1",
+            name: "Equipment 1",
+            services: {
+              services: {
+                ids: [],
+                entities: {}
+              }
+            },
+          },
+          "e2": {
+            id: "e2",
+            name: "Equipment 2",
+            services: {
+              services: {
+                ids: [],
+                entities: {}
+              }
+            },
+          }
         }
       }
     },

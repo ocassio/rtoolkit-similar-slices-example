@@ -4,11 +4,8 @@ import { genericProductSelector } from "../generic-product.selectors";
 
 const versionFeatureSlice = createProductFeatureSlice({
     caseName: "generic/version",
-    initialState: {
-        value: 0
-    },
     reducer: versionFeatureReducer,
-    baseSelector: genericProductSelector(state => state.version, null)
+    baseSelector: genericProductSelector(state => state.version, undefined)
 });
 
 export const {

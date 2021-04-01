@@ -4,15 +4,15 @@ import { createSelectDoubledVersionValue, nextVersion, selectVersionValue } from
 import { increase } from "./slices/generic/generic-product.slice";
 import { useMemoizedProductSelector, useProductDispatch, useProductSelector, useProductThunk } from "./slices/product.hooks";
 import ProductServices from "./services/product-services.component";
-import { ProductFeatureContext, ProductFeatureProps } from "./product-feature.context";
+import { ProductFeatureContext } from "./product-feature.context";
 import { selectCount, createSelectCountX2, selectEquipmentIds } from "./slices/generic/generic-product.selectors";
 import { genericVersionCase } from "./slices/generic/features/generic-product-version.feature.slice";
 import { loadProduct } from "./slices/generic/generic-product.thunks";
 import { genericServicesCase } from "./slices/generic/features/generic-product-services.feature.slice";
 import GenericEquipment from "./generic-equipment.component";
 
-const versionFeatureProps: ProductFeatureProps = { case: genericVersionCase };
-const servicesFeatureProps: ProductFeatureProps = { case: genericServicesCase };
+const versionFeatureProps = genericVersionCase();
+const servicesFeatureProps = genericServicesCase();
 
 const GenericProduct: FC = () => {
 

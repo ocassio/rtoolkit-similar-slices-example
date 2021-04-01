@@ -12,6 +12,6 @@ const genericEquipmentServicesFeatureSlice = createProductFeatureSlice({
 });
 
 export const {
-    caseName: genericEquipmentServicesCase,
+    propsCreator: genericEquipmentServicesCase,
     reducer: genericEquipmentServicesReducer
 } = genericEquipmentServicesFeatureSlice;

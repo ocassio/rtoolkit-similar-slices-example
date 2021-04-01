@@ -1,6 +1,6 @@
 import { EntityId } from "@reduxjs/toolkit";
 import React, { FC, memo, useMemo } from "react";
-import { ProductFeatureContext, ProductFeatureProps } from "./product-feature.context";
+import { ProductFeatureContext } from "./product-feature.context";
 import { genericEquipmentServicesCase } from "./slices/generic/features/generic-equipment-services.feature.slice";
 import { selectEquipmentName } from "./slices/generic/generic-product.selectors";
 import { useProductSelector } from "./slices/product.hooks";
@@ -13,10 +13,7 @@ interface GenericEquipmentProps {
 const GenericEquipment: FC<GenericEquipmentProps> = ({ id }) => {
     const name = useProductSelector(selectEquipmentName(id));
     
-    const servicesFeatureProps: ProductFeatureProps = useMemo(() => ({
-        case: genericEquipmentServicesCase,
-        arg: id
-    }), [id]);
+    const servicesFeatureProps = useMemo(() => genericEquipmentServicesCase(id), [id]);
 
     return (
         <div>

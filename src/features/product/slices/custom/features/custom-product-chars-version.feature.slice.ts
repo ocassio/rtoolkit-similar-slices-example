@@ -9,6 +9,6 @@ const versionFeatureSlice = createProductFeatureSlice({
 });
 
 export const {
-    caseName: customCharsVersionCase,
+    propsCreator: customCharsVersionCase,
     reducer: customCharsVersionReducer
 } = versionFeatureSlice;

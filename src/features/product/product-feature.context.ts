@@ -1,8 +1,4 @@
 import { createContext } from "react";
-
-export interface ProductFeatureProps {
-    case: string;
-    arg?: any;
-}
+import { ProductFeatureProps } from "./slices/features/product-feature.slices";
 
 export const ProductFeatureContext = createContext<ProductFeatureProps | undefined>(undefined);

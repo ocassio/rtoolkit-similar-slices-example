@@ -9,6 +9,6 @@ const servicesFeatureSlice = createProductFeatureSlice({
 });
 
 export const {
-    caseName: customServicesCase,
+    propsCreator: customServicesCase,
     reducer: customServicesReducer
 } = servicesFeatureSlice;

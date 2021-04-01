@@ -1,6 +1,6 @@
 import React, { ChangeEventHandler, useEffect, useState } from "react";
 import { FC } from "react";
-import { ProductFeatureContext, ProductFeatureProps } from "./product-feature.context";
+import { ProductFeatureContext } from "./product-feature.context";
 import { selectName } from "./slices/abstract/abstract-product.slice";
 import { loadVersion, nextVersion, selectVersionValue } from "./slices/features/version/version.feature.slice";
 import { useProductDispatch, useProductSelector, useProductAsyncThunk } from "./slices/product.hooks";
@@ -12,9 +12,9 @@ import { customVersionCase } from "./slices/custom/features/custom-product-versi
 import { customCharsVersionCase } from "./slices/custom/features/custom-product-chars-version.feature.slice";
 import { customServicesCase } from "./slices/custom/features/custom-product-services.feature.slice";
 
-const versionFeatureProps: ProductFeatureProps = { case: customVersionCase };
-const charsVersionFeatureProps: ProductFeatureProps = { case: customCharsVersionCase };
-const servicesFeatureProps: ProductFeatureProps = { case: customServicesCase }
+const versionFeatureProps = customVersionCase();
+const charsVersionFeatureProps = customCharsVersionCase();
+const servicesFeatureProps = customServicesCase();
 
 const CustomProduct: FC = () => {    
     const name = useProductSelector(selectName);

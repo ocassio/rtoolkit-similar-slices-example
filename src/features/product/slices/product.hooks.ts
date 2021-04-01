@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppThunk, RootSelector } from "../../../app/store";
 import { BundleProductContext } from "../../bundle/bundle-product.context";
 import { selectBundleProductById } from "../../bundle/slices/bundle.slice";
-import { ProductFeatureContext, ProductFeatureProps } from "../product-feature.context";
+import { ProductFeatureContext } from "../product-feature.context";
 import { ProductContext } from "../product.context";
-import { productCaseSelectorsRegistry } from "./features/product-feature.slices";
+import { productCaseSelectorsRegistry, ProductFeatureProps } from "./features/product-feature.slices";
 import { ProductSliceNames } from "./product.slices";
 
 const PRODUCT_SLICE_SELECTORS = {
